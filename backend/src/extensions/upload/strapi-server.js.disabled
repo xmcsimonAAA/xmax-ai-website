@@ -1,0 +1,51 @@
+"use strict";
+
+/**
+ * Upload extension — raise Strapi image quality from 80% to 95%.
+ *
+ * Strapi v5 compresses uploaded JPEG originals to quality 80.
+ * This extension patches the sharp module cache so ALL sharp()
+ * calls (including Strapi's internal ones) default to higher quality.
+ */
+
+const Sharp = require("sharp");
+
+// Create a proxy that wraps every sharp instance with higher quality defaults
+const originalSharp = Sharp.bind(Sharp);
+const HIGH_QUALITY_OPTS = {
+  jpeg: { quality: 95, progressive: true },
+  webp: { quality: 95 },
+  png: { compressionLevel: 3 },
+  avif: { quality: 95 },
+};
+
+function patchInstance(instance) {
+  const origJpeg = instance.jpeg.bind(instance);
+  const origWebp = instance.webp.bind(instance);
+  const origPng = instance.png.bind(instance);
+  const origAvif = instance.avif.bind(instance);
+
+  instance.jpeg = (opts) => origJpeg({ ...opts, ...HIGH_QUALITY_OPTS.jpeg });
+  instance.webp = (opts) => origWebp({ ...opts, ...HIGH_QUALITY_OPTS.webp });
+  instance.png = (opts) => origPng({ ...opts, ...HIGH_QUALITY_OPTS.png });
+  instance.avif = (opts) => origAvif({ ...opts, ...HIGH_QUALITY_OPTS.avif });
+
+  return instance;
+}
+
+function HighQualitySharp(...args) {
+  return patchInstance(originalSharp(...args));
+}
+
+// Copy static properties
+Object.keys(Sharp).forEach((key) => {
+  HighQualitySharp[key] = Sharp[key];
+});
+
+// Replace sharp in Node.js require cache so ALL modules get our version
+const sharpModulePath = require.resolve("sharp");
+require.cache[sharpModulePath].exports = HighQualitySharp;
+
+module.exports = (plugin) => {
+  return plugin;
+};

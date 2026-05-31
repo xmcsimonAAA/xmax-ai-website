@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_about_value_items",
+  "info": {
+    "displayName": "价值主张",
+    "icon": "star",
+    "description": "价值主张"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_about_subsidiarys",
+  "info": {
+    "displayName": "子公司",
+    "icon": "building",
+    "description": "子公司"
+  },
+  "options": {},
+  "attributes": {
+    "business": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "legalName": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

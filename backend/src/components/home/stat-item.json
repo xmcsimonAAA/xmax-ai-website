@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_home_stat_items",
+  "info": {
+    "displayName": "统计数据",
+    "icon": "chart-bar",
+    "description": "统计数据"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

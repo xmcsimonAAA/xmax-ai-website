@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_contact_suggestions",
+  "info": {
+    "displayName": "建议",
+    "icon": "lightbulb",
+    "description": "建议"
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

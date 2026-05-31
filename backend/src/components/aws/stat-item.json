@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_aws_stat_items",
+  "info": {
+    "displayName": "AWS统计",
+    "icon": "chart-bar",
+    "description": "AWS统计"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

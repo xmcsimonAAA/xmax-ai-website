@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_aws_core_messages",
+  "info": {
+    "displayName": "核心信息",
+    "icon": "message",
+    "description": "核心信息"
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "text",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "kind": "singleType",
+  "collectionName": "infrastructure_pages",
+  "info": {
+    "singularName": "infrastructure-page",
+    "pluralName": "infrastructure-pages",
+    "displayName": "AI基础设施",
+    "description": "AI推理服务基础设施层级"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "headerImage": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "headerLabel": {
+      "type": "string",
+      "default": "AI Infrastructure",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerHeading": {
+      "type": "string",
+      "default": "全球 AI 推理服务基础设施",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "keyPrincipleHeading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "keyPrincipleParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "layers": {
+      "type": "component",
+      "repeatable": true,
+      "component": "infra.layer"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

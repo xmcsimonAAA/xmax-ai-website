@@ -1,0 +1,37 @@
+{
+  "kind": "singleType",
+  "collectionName": "terms_pages",
+  "info": {
+    "singularName": "terms-page",
+    "pluralName": "terms-pages",
+    "displayName": "服务条款",
+    "description": "Terms of Service 页面内容"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

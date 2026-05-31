@@ -1,0 +1,85 @@
+{
+  "kind": "singleType",
+  "collectionName": "aws_pages",
+  "info": {
+    "singularName": "aws-page",
+    "pluralName": "aws-pages",
+    "displayName": "AWS基础设施",
+    "description": "AWS基础设施叙事、统计、能力映射"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "headerImage": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "headerLabel": {
+      "type": "string",
+      "default": "AWS Infrastructure",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerHeading": {
+      "type": "string",
+      "default": "AWS 基础设施",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "quoteChinese": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "narrativePoints": {
+      "type": "component",
+      "repeatable": true,
+      "component": "aws.narrative-point"
+    },
+    "awsStats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "aws.stat-item"
+    },
+    "coreMessages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "aws.core-message"
+    },
+    "capabilityMappings": {
+      "type": "component",
+      "repeatable": true,
+      "component": "aws.capability-mapping"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="XMAX AI Inc 官方网站：展示全球 AI 推理服务基础设施、AI 产品矩阵、9 大业务板块、集团与子公司网络及 AWS 技术底座。"
+    />
+    <meta
+      name="keywords"
+      content="XMAX AI Inc,XMAX集团,AI推理服务基础设施,AWS,AI产品,企业官网,电商,互娱,供应链,太空计算,机器人,生命科学,金融,安全,企业服务"
+    />
+    <meta property="og:title" content="XMAX AI Inc｜全球 AI 推理服务基础设施" />
+    <meta
+      property="og:description"
+      content="XMAX AI Inc 在 XMAX 集团体系下构建全球 AI 推理服务基础设施，并通过 9 大业务板块服务全社会。"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XMAX AI Inc｜全球 AI 推理服务基础设施" />
+    <meta
+      name="twitter:description"
+      content="展示全球 AI 推理服务基础设施、AI 产品矩阵、9 大业务板块、集团与子公司网络及 AWS 技术底座。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      @keyframes pulse-tech {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.08); opacity: 1; }
+      }
+      @keyframes blink-cursor {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+      /* 自定义光标隐藏默认鼠标（桌面端） */
+      @media (hover: hover) and (pointer: fine) {
+        html.cyber-cursor body,
+        html.cyber-cursor body * {
+          cursor: none !important;
+        }
+      }
+      /* hover 到可交互元素时：目标文字放大 + 变清晰 */
+      .cyber-hover-active {
+        transform: scale(1.06) !important;
+        filter: brightness(1.35) !important;
+        transition: transform 0.25s ease, filter 0.25s ease !important;
+        text-shadow: 0 0 12px rgba(147,197,253,0.25) !important;
+      }
+      /* 链接和按钮在 hover 时额外高亮 */
+      a.cyber-hover-active,
+      button.cyber-hover-active,
+      [role="button"].cyber-hover-active {
+        color: #93c5fd !important;
+      }
+    </style>
+    <title>XMAX AI Inc｜全球 AI 推理服务基础设施</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

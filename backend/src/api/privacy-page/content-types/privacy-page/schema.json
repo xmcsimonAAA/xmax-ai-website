@@ -1,0 +1,37 @@
+{
+  "kind": "singleType",
+  "collectionName": "privacy_pages",
+  "info": {
+    "singularName": "privacy-page",
+    "pluralName": "privacy-pages",
+    "displayName": "隐私政策",
+    "description": "Privacy Policy 页面内容"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

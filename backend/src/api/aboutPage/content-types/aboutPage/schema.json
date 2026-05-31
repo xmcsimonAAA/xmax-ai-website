@@ -1,0 +1,122 @@
+{
+  "kind": "singleType",
+  "collectionName": "about_pages",
+  "info": {
+    "singularName": "about-page",
+    "pluralName": "about-pages",
+    "displayName": "关于我们",
+    "description": "公司定位、品牌叙事、子公司网络"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "headerImage": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "headerLabel": {
+      "type": "string",
+      "default": "About Us",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerHeading": {
+      "type": "string",
+      "default": "关于我们",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "narrativeLabel": {
+      "type": "string",
+      "default": "Our Narrative",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "narrativeHeading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "narrativeParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "groupLabel": {
+      "type": "string",
+      "default": "Group Structure",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "groupHeading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "groupParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "values": {
+      "type": "component",
+      "repeatable": true,
+      "component": "about.value-item"
+    },
+    "highlights": {
+      "type": "component",
+      "repeatable": true,
+      "component": "about.highlight-item"
+    },
+    "subsidiaries": {
+      "type": "component",
+      "repeatable": true,
+      "component": "about.subsidiary"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

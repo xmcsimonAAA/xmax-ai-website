@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_aws_narrative_points",
+  "info": {
+    "displayName": "叙事要点",
+    "icon": "eye",
+    "description": "叙事要点"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

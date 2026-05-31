@@ -1,0 +1,63 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_settings",
+  "info": {
+    "singularName": "site-setting",
+    "pluralName": "site-settings",
+    "displayName": "站点设置",
+    "description": "站点全局设置"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "companyName": {
+      "type": "string",
+      "default": "XMAX AI Inc",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "tagline": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "footerDescription": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "navItems": {
+      "type": "component",
+      "repeatable": true,
+      "component": "site.nav-item"
+    },
+    "footerLinkGroups": {
+      "type": "component",
+      "repeatable": true,
+      "component": "site.footer-link-group"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

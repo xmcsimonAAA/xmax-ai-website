@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_site_footer_link_groups",
+  "info": {
+    "displayName": "页脚链接组",
+    "icon": "menu",
+    "description": "页脚链接组"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

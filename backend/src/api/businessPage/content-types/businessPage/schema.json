@@ -1,0 +1,62 @@
+{
+  "kind": "singleType",
+  "collectionName": "business_pages",
+  "info": {
+    "singularName": "business-page",
+    "pluralName": "business-pages",
+    "displayName": "业务板块",
+    "description": "9大业务板块"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "headerImage": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "headerLabel": {
+      "type": "string",
+      "default": "Business Units",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerHeading": {
+      "type": "string",
+      "default": "9 大业务板块",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "businessUnits": {
+      "type": "component",
+      "repeatable": true,
+      "component": "business.unit"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

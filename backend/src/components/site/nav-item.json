@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_site_nav_items",
+  "info": {
+    "displayName": "导航项",
+    "icon": "link",
+    "description": "导航项"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

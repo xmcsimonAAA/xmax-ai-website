@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_aws_capability_mappings",
+  "info": {
+    "displayName": "能力映射",
+    "icon": "grid",
+    "description": "能力映射"
+  },
+  "options": {},
+  "attributes": {
+    "capability": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

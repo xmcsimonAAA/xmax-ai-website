@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_home_cta_buttons",
+  "info": {
+    "displayName": "CTA按钮",
+    "icon": "cursor",
+    "description": "CTA按钮"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

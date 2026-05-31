@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_home_nav_cards",
+  "info": {
+    "displayName": "导航卡片",
+    "icon": "layout",
+    "description": "导航卡片"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "icon": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

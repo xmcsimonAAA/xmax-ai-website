@@ -1,0 +1,75 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_pages",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "首页",
+    "description": "首页轮播、使命陈述、导航卡片、统计数据、最新动态、CTA"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "missionLabel": {
+      "type": "string",
+      "default": "Our Mission",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "missionHeading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "missionParagraph": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "heroSlides": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.hero-slide"
+    },
+    "navCards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.nav-card"
+    },
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.stat-item"
+    },
+    "recentUpdates": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.update-item"
+    },
+    "ctaPrimaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.cta-button"
+    },
+    "ctaSecondaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.cta-button"
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}
