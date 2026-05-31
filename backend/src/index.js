@@ -22,7 +22,56 @@ const LOCALIZED_TYPES = [
   "api::terms-page.terms-page",
 ];
 
+const PUBLIC_READ_APIS = new Set(LOCALIZED_TYPES.map((uid) => uid.split(".")[0]));
+const PUBLIC_READ_ACTIONS = new Set(["find", "findOne"]);
 const TRANSLATABLE_TYPES = new Set(["string", "text", "richtext"]);
+
+async function ensurePublicReadPermissions(strapi) {
+  const role = await strapi.db.query("plugin::users-permissions.role").findOne({
+    where: { type: "public" },
+    populate: ["permissions"],
+  });
+
+  if (!role) {
+    strapi.log.warn("[permissions] Public role not found; skipping public API permission bootstrap");
+    return;
+  }
+
+  const actions = strapi
+    .plugin("users-permissions")
+    .service("users-permissions")
+    .getActions();
+
+  const existingActions = new Set((role.permissions || []).map((permission) => permission.action));
+  const readActions = [];
+
+  for (const [apiName, config] of Object.entries(actions)) {
+    if (!PUBLIC_READ_APIS.has(apiName)) continue;
+
+    for (const [controllerName, controller] of Object.entries(config.controllers || {})) {
+      for (const actionName of Object.keys(controller || {})) {
+        if (!PUBLIC_READ_ACTIONS.has(actionName)) continue;
+        readActions.push(`${apiName}.${controllerName}.${actionName}`);
+      }
+    }
+  }
+
+  const missingActions = readActions.filter((action) => !existingActions.has(action));
+  if (missingActions.length === 0) return;
+
+  await Promise.all(
+    missingActions.map((action) =>
+      strapi.db.query("plugin::users-permissions.permission").create({
+        data: {
+          action,
+          role: role.id,
+        },
+      })
+    )
+  );
+
+  strapi.log.info(`[permissions] Enabled ${missingActions.length} public read permissions`);
+}
 
 async function translateEntry(strapi, uid, entityId, sourceLocale) {
   const apiKey = process.env.DEEPL_API_KEY;
@@ -96,6 +145,8 @@ async function translateEntry(strapi, uid, entityId, sourceLocale) {
 
 module.exports = {
   async bootstrap({ strapi }) {
+    await ensurePublicReadPermissions(strapi);
+
     if (!process.env.DEEPL_API_KEY) {
       strapi.log.info("[auto-translate] DEEPL_API_KEY not set — skipping lifecycle registration");
       return;

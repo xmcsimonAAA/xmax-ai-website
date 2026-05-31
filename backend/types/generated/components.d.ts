@@ -179,7 +179,12 @@ export interface BusinessSection extends Struct.ComponentSchema {
           localized: true;
         };
       }>;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
   };
 }
 
@@ -198,7 +203,12 @@ export interface BusinessUnit extends Struct.ComponentSchema {
           localized: true;
         };
       }>;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     infraRelation: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -334,7 +344,12 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
   };
   attributes: {
     bgGradient: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     subtitle: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -372,7 +387,12 @@ export interface HomeNavCard extends Struct.ComponentSchema {
         };
       }>;
     icon: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -423,7 +443,12 @@ export interface HomeUpdateItem extends Struct.ComponentSchema {
           localized: true;
         };
       }>;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     tag: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -498,7 +523,12 @@ export interface ProductItem extends Struct.ComponentSchema {
         };
       }>;
     icon: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'>;
+    image: Schema.Attribute.Media<'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{

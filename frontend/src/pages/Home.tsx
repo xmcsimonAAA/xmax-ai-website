@@ -283,7 +283,7 @@ export default function Home() {
 
       {/* ─── Navigation Cards (full-bleed image style) ── */}
       {navCards.length > 0 && (
-        <section className="bg-black">
+        <section className="relative overflow-hidden bg-black">
           <div className="grid grid-cols-1">
             {navCards.map((card, index) => (
               <motion.a
@@ -308,9 +308,12 @@ export default function Home() {
                   )}
                 </div>
                 {/* Top gradient — blend from black above */}
-                <div className="absolute inset-x-0 top-0 h-52 bg-gradient-to-b from-black via-black/70 to-transparent" />
+                <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-black via-black/65 to-transparent lg:h-72" />
                 {/* Bottom gradient — blend into text area */}
-                <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-black via-black/75 to-transparent lg:h-96" />
+                {index < navCards.length - 1 && (
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-black/55 to-black" />
+                )}
                 {/* Text content — overlaid on image */}
                 <div className="relative z-10 w-full px-8 pb-16 lg:px-16 lg:pb-20">
                   <div className="mx-auto max-w-4xl">
