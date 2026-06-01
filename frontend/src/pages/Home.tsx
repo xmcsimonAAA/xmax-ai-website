@@ -157,7 +157,7 @@ export default function Home() {
                   <TypewriterText
                     key={`hero-title-${heroIndex}`}
                     text={currentSlide.title}
-                    speed={0.025}
+                    speed={0.06}
                     showCursor={false}
                   />
                 </h1>
@@ -266,7 +266,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-6 text-4xl leading-tight text-white sm:text-5xl lg:text-6xl heading-display"
             >
-              <TypewriterOnView text={data?.missionHeading || t(H, "missionHeading", lang)} speed={0.03} showCursor={false} />
+              <TypewriterOnView text={data?.missionHeading || t(H, "missionHeading", lang)} speed={0.065} showCursor={false} />
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -301,7 +301,7 @@ export default function Home() {
                     <img
                       src={mediaUrl(card.image, "large") || mediaUrl(card.image) || ""}
                       alt={card.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="motion-image h-full w-full object-cover"
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900" />
@@ -405,7 +405,7 @@ export default function Home() {
                       <img
                         src={mediaUrl(item.image, "medium") || mediaUrl(item.image) || ""}
                         alt={item.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="motion-image h-full w-full object-cover"
                       />
                     </div>
                   )}
@@ -433,7 +433,7 @@ export default function Home() {
           className="mx-auto max-w-7xl px-8 lg:px-12 text-center"
         >
           <h2 className="text-4xl heading-display text-white sm:text-5xl">
-            <TypewriterOnView text={t(H, "ctaHeading", lang)} speed={0.03} showCursor={false} />
+            <TypewriterOnView text={t(H, "ctaHeading", lang)} speed={0.065} showCursor={false} />
           </h2>
           <p className="mt-6 text-xl text-slate-300 font-light max-w-2xl mx-auto">
             {t(H, "ctaParagraph", lang)}

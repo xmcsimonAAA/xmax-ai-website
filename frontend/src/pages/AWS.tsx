@@ -106,7 +106,7 @@ export default function AWSPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-4 text-4xl text-white sm:text-5xl lg:text-6xl heading-display"
           >
-            <TypewriterText text={headerHeading} speed={0.025} showCursor={false} />
+            <TypewriterText text={headerHeading} speed={0.06} showCursor={false} />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -129,7 +129,7 @@ export default function AWSPage() {
             >
               <p className="section-label text-white">Infrastructure Narrative</p>
               <h2 className="mt-4 text-3xl heading-display text-white sm:text-4xl">
-                <TypewriterOnView text={t(AW, "narrativeSection", lang)} speed={0.03} showCursor={false} />
+                <TypewriterOnView text={t(AW, "narrativeSection", lang)} speed={0.065} showCursor={false} />
               </h2>
 
               <div className="mt-8 space-y-4">
@@ -214,7 +214,7 @@ export default function AWSPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-4 text-3xl heading-display text-white sm:text-4xl"
           >
-            <TypewriterOnView text={t(AW, "capabilityMapping", lang)} speed={0.03} showCursor={false} />
+            <TypewriterOnView text={t(AW, "capabilityMapping", lang)} speed={0.065} showCursor={false} />
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}

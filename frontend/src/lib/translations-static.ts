@@ -464,6 +464,28 @@ export function translateStatic(zh: string): string {
   return zh;
 }
 
+const REVERSE_TRANS_MAP: Record<string, string> = Object.entries(TRANS_MAP).reduce(
+  (acc, [zh, en]) => {
+    if (!acc[en]) acc[en] = zh;
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
+/**
+ * Translate a known English CMS string back to Chinese.
+ * This is intentionally dictionary-based, not machine translation, so brand/product
+ * names such as XMAX AI, AWS, Agent OS, and URL-like strings are not mangled.
+ */
+export function translateStaticToZh(en: string): string {
+  if (REVERSE_TRANS_MAP[en]) return REVERSE_TRANS_MAP[en];
+  const trimmed = en.trim();
+  if (REVERSE_TRANS_MAP[trimmed]) return REVERSE_TRANS_MAP[trimmed];
+  const noBullet = trimmed.replace(/^·\s*/, "");
+  if (REVERSE_TRANS_MAP[noBullet]) return `${trimmed.startsWith("·") ? "·" : ""}${REVERSE_TRANS_MAP[noBullet]}`;
+  return en;
+}
+
 /**
  * Recursively translate any data structure, replacing Chinese strings with English.
  */
@@ -508,6 +530,41 @@ export function deepTranslateStatic<T>(data: T): T {
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(data as object)) {
       result[key] = deepTranslateStatic((data as Record<string, unknown>)[key]);
+    }
+    return result as T;
+  }
+
+  return data;
+}
+
+/**
+ * Recursively normalize CMS data for Chinese display.
+ * Only exact known English phrases are converted; unknown English/proper nouns remain intact.
+ */
+export function deepLocalizeStatic<T>(data: T, target: "zh-Hans" | "en"): T {
+  if (target === "en") return deepTranslateStatic(data);
+  if (data === null || data === undefined) return data;
+
+  if (typeof data === "string") {
+    const translated = translateStaticToZh(data);
+    if (translated !== data) return translated as unknown as T;
+    if (data.includes("\n")) {
+      return data
+        .split("\n")
+        .map((line) => translateStaticToZh(line.trim()))
+        .join("\n") as unknown as T;
+    }
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(item => deepLocalizeStatic(item, target)) as unknown as T;
+  }
+
+  if (typeof data === "object") {
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(data as object)) {
+      result[key] = deepLocalizeStatic((data as Record<string, unknown>)[key], target);
     }
     return result as T;
   }

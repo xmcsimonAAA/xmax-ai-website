@@ -16,6 +16,11 @@ export default function NewsArticle() {
   const [loading, setLoading] = useState(true);
   const { lang } = useLang();
   const [, navigate] = useLocation();
+  const backToNewsLabel = lang === "zh" ? "返回新闻" : "Back to News";
+  const notFoundLabel = lang === "zh" ? "未找到文章" : "Article not found";
+  const corporateNewsLabel = lang === "zh" ? "公司新闻" : "Corporate News";
+  const minuteReadLabel = lang === "zh" ? "分钟阅读" : "min read";
+  const relatedLabel = lang === "zh" ? "相关" : "Related";
 
   // Extract article id from URL hash: #/news/123 → 123
   const rawId = typeof window !== "undefined"
@@ -47,10 +52,10 @@ export default function NewsArticle() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center bg-slate-950 text-white">
         <h1 className="text-6xl font-bold text-slate-200">404</h1>
-        <p className="mt-4 text-slate-500">Article not found</p>
+        <p className="mt-4 text-slate-500">{notFoundLabel}</p>
         <button onClick={() => navigate("/news")}
           className="mt-6 rounded border border-slate-700 px-6 py-2 text-sm text-slate-300 hover:text-white">
-          ← Back to News
+          ← {backToNewsLabel}
         </button>
       </div>
     );
@@ -89,7 +94,7 @@ export default function NewsArticle() {
           onClick={() => navigate("/news")}
           className="absolute left-6 top-6 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-white/80 backdrop-blur-md transition-all hover:bg-black/50 hover:text-white lg:left-12 lg:top-8"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to News
+          <ArrowLeft className="h-4 w-4" /> {backToNewsLabel}
         </button>
 
         {/* Title & metadata overlaid */}
@@ -132,12 +137,12 @@ export default function NewsArticle() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">XMAX AI</p>
-                  <p className="text-xs text-slate-500">Corporate News</p>
+                  <p className="text-xs text-slate-500">{corporateNewsLabel}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 text-sm text-slate-500">
                 <Clock className="h-3.5 w-3.5" />
-                <span>{Math.ceil(article.title.length / 50)} min read</span>
+                <span>{Math.ceil(article.title.length / 50)} {minuteReadLabel}</span>
               </div>
             </div>
 
@@ -170,7 +175,9 @@ export default function NewsArticle() {
             {/* Footer divider */}
             <div className="mt-16 border-t border-slate-800 pt-8">
               <p className="text-xs text-slate-600">
-                © 2026 XMAX AI Inc. All rights reserved. This article may not be reproduced without permission.
+                {lang === "zh"
+                  ? "© 2026 XMAX AI Inc. 保留所有权利。未经许可不得转载本文。"
+                  : "© 2026 XMAX AI Inc. All rights reserved. This article may not be reproduced without permission."}
               </p>
             </div>
           </motion.div>
@@ -181,7 +188,7 @@ export default function NewsArticle() {
       {related.length > 0 && (
         <section className="border-t border-slate-800 bg-slate-900 py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-8 lg:px-12">
-            <p className="section-label text-slate-300">Related</p>
+            <p className="section-label text-slate-300">{relatedLabel}</p>
             <h2 className="mt-6 text-3xl heading-display text-white sm:text-4xl">
               {lang === "zh" ? "更多新闻" : "More News"}
             </h2>
@@ -201,7 +208,7 @@ export default function NewsArticle() {
                       <img
                         src={mediaUrl(item.image, "medium") || mediaUrl(item.image) || ""}
                         alt={item.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="motion-image h-full w-full object-cover"
                       />
                     </div>
                   )}

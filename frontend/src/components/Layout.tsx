@@ -25,7 +25,7 @@ import {
   Globe,
   type LucideIcon,
 } from "lucide-react";
-import { fetchSiteSetting, mediaUrl, toStrapiLocale, type SiteSettingData } from "@/lib/cms";
+import { fetchSiteSetting, toStrapiLocale, type SiteSettingData } from "@/lib/cms";
 
 /* ─── Language Context ───────────────────────────────── */
 
@@ -37,7 +37,7 @@ interface LangContextType {
 }
 
 const LangContext = createContext<LangContextType>({
-  lang: "zh",
+  lang: "en",
   setLang: () => {},
 });
 
@@ -56,15 +56,15 @@ const T: Record<Lang, Record<string, string>> = {
     business: "业务板块",
     aws: "AWS 基础设施",
     contact: "联系我们",
-    tagline: "Global AI Inference Infrastructure",
+    tagline: "全球 AI 推理服务基础设施",
     footerDesc:
       "XMAX AI Inc 正在 XMAX 集团体系下构建全球 AI 推理服务基础设施，并通过 9 大业务板块将 AI 能力服务全社会。",
-    company: "Company",
-    platform: "Platform",
-    businessFooter: "Business",
-    copyright: "© {year} XMAX AI Inc. All rights reserved.",
-    privacy: "Privacy Policy",
-    terms: "Terms of Service",
+    company: "公司",
+    platform: "平台",
+    businessFooter: "业务",
+    copyright: "© {year} XMAX AI Inc. 保留所有权利。",
+    privacy: "隐私政策",
+    terms: "服务条款",
     groupSubsidiary: "集团与子公司",
     nineUnits: "9 大业务板块",
     enterpriseService: "企业服务",
@@ -178,7 +178,7 @@ function LanguageSelector({ lang, setLang }: { lang: Lang; setLang: (l: Lang) =>
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+        className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 text-[13px] font-medium text-slate-300 transition-all hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
       >
         <Globe className="h-4 w-4" />
         <span>{label}</span>
@@ -193,17 +193,17 @@ function LanguageSelector({ lang, setLang }: { lang: Lang; setLang: (l: Lang) =>
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full z-50 mt-1 w-28 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
+              className="absolute right-0 top-full z-50 mt-2 w-28 overflow-hidden rounded-xl border border-white/10 bg-slate-950/95 py-1 shadow-2xl shadow-black/40 backdrop-blur-md"
             >
               <button
                 onClick={() => { setLang("zh"); setOpen(false); }}
-                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-slate-800 ${lang === "zh" ? "font-semibold text-white" : "text-slate-300"}`}
+                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-white/[0.07] ${lang === "zh" ? "font-semibold text-white" : "text-slate-300"}`}
               >
                 中文
               </button>
               <button
                 onClick={() => { setLang("en"); setOpen(false); }}
-                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-slate-800 ${lang === "en" ? "font-semibold text-white" : "text-slate-300"}`}
+                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-white/[0.07] ${lang === "en" ? "font-semibold text-white" : "text-slate-300"}`}
               >
                 English
               </button>
@@ -237,7 +237,6 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
     }
   }, [mobileOpen]);
 
-  const logoUrl = siteData?.logo ? mediaUrl(siteData.logo) : null;
   const companyName = siteData?.companyName || "XMAX AI";
   const tagline = siteData?.tagline || t.tagline;
 
@@ -246,42 +245,45 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
       className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/60"
       onMouseLeave={() => setOpenDropdown(null)}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        {/* Logo — clickable, goes to home */}
-        <a href="#/" className="flex items-center gap-3">
-          {logoUrl ? (
+      <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-5 px-6 py-3.5 lg:px-8">
+        {/* Brand: logo links to xmax.com, text returns to this site home */}
+        <div className="flex min-w-0 items-center gap-3">
+          <a
+            href="https://xmax.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="XMAX official website"
+            className="flex h-10 w-24 shrink-0 items-center overflow-hidden bg-black sm:w-28"
+          >
             <img
-              src={logoUrl}
-              alt={companyName}
-              className="h-10 w-10 rounded-lg object-cover"
+              src="/assets/xmax-logo.jpg"
+              alt="XMAX"
+              className="h-full w-full object-contain"
             />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800 text-white">
-              <Building2 className="h-5 w-5" />
-            </div>
-          )}
-          <div>
+          </a>
+          <a href="#/" className="min-w-0">
             <div className="text-[15px] font-bold tracking-[0.15em] text-white">{companyName}</div>
             <div className="text-[10px] tracking-wider text-slate-400">{tagline}</div>
-          </div>
-        </a>
+          </a>
+        </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden min-w-0 items-center gap-3 xl:flex">
+          <div className="flex min-w-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 shadow-[0_0_0_1px_rgba(15,23,42,0.45)] backdrop-blur-md">
           {navConfig.map((item) => (
             <div
               key={item.href}
               className="relative"
-              onMouseEnter={() => item.children.length > 0 && setOpenDropdown(item.href)}
+              onMouseEnter={() => setOpenDropdown(item.children.length > 0 ? item.href : null)}
             >
               <a
                 href={`#${item.href}`}
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                className="flex h-9 items-center justify-center gap-1 rounded-full px-3.5 text-center text-[13px] font-medium leading-tight text-slate-300 transition-all hover:bg-white/[0.08] hover:text-white"
               >
-                {t[item.labelKey] || item.labelKey}
+                <span className="whitespace-nowrap">{t[item.labelKey] || item.labelKey}</span>
                 {item.children.length > 0 && (
                   <ChevronDown
-                    className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    className={`h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform duration-200 ${
                       openDropdown === item.href ? "rotate-180" : ""
                     }`}
                   />
@@ -289,15 +291,16 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
               </a>
             </div>
           ))}
+          </div>
           {/* Language Selector */}
-          <div className="ml-2 border-l border-slate-700 pl-3">
+          <div className="shrink-0">
             <LanguageSelector lang={lang} setLang={setLang} />
           </div>
         </nav>
 
         {/* Mobile Toggle */}
         <button
-          className="lg:hidden p-2 text-slate-300"
+          className="p-2 text-slate-300 xl:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -355,7 +358,7 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
       {/* Mobile Menu — Portal to body, avoids position:fixed inside position:sticky bugs */}
       {mobileOpen && createPortal(
         <div
-          className="lg:hidden"
+          className="xl:hidden"
           style={{
             position: "fixed",
             inset: 0,
@@ -418,38 +421,49 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
                 const label = t[item.labelKey] || item.labelKey;
                 return (
                   <div key={item.href} style={{ borderBottom: "1px solid rgba(30,41,59,0.6)" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (hasChildren) {
-                          setMobileExpanded(isExpanded ? null : item.href);
-                        } else {
-                          setMobileOpen(false);
-                          setMobileExpanded(null);
-                          window.location.hash = item.href;
-                        }
-                      }}
+                    <div
                       style={{
-                        touchAction: "manipulation",
                         display: "flex",
                         width: "100%",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        padding: "16px 20px",
+                        gap: 12,
+                        padding: "14px 20px",
                         textAlign: "left",
                         background: "transparent",
-                        border: "none",
                         color: "#fff",
                       }}
                     >
-                      <span className="text-[15px] font-semibold text-white">{label}</span>
+                      <a
+                        href={`#${item.href}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setMobileOpen(false);
+                          setMobileExpanded(null);
+                        }}
+                        className="flex-1 text-[15px] font-semibold text-white"
+                        style={{ textDecoration: "none" }}
+                      >
+                        {label}
+                      </a>
                       {hasChildren && (
-                        <ChevronDown
-                          className="h-4 w-4 text-slate-400 shrink-0"
-                          style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
-                        />
+                        <button
+                          type="button"
+                          aria-label={`${label} submenu`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setMobileExpanded(isExpanded ? null : item.href);
+                          }}
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-slate-400"
+                          style={{ touchAction: "manipulation" }}
+                        >
+                          <ChevronDown
+                            className="h-4 w-4"
+                            style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                          />
+                        </button>
                       )}
-                    </button>
+                    </div>
                     {isExpanded && hasChildren && (
                       <div
                         style={{
@@ -575,8 +589,8 @@ function Footer({ lang }: { lang: Lang }) {
               <ul className="mt-4 space-y-3">
                 {[
                   { label: t.nineUnits, href: "#/business" },
-                  { label: t.enterpriseService, href: "#/business" },
-                  { label: t.securityGovernance, href: "#/business" },
+                  { label: t.enterpriseService, href: "#/enterprise-service" },
+                  { label: t.securityGovernance, href: "#/security-governance" },
                 ].map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className="text-sm text-slate-400 hover:text-white transition-colors">
@@ -646,8 +660,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>(() => {
     const saved = localStorage.getItem("xmax-lang") as Lang | null;
     if (saved === "zh") return "zh";
+    if (saved === "en") return "en";
     return "en";  // 默认英文，首次访问显示英文
   });
+
+  useEffect(() => {
+    localStorage.setItem("xmax-lang", lang);
+  }, [lang]);
 
   return (
     <LangContext.Provider value={{ lang, setLang }}>

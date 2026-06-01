@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
 
 /**
  * 科技感自定义光标
@@ -10,91 +9,118 @@ import gsap from "gsap";
 export default function CyberCursor() {
   const innerRef = useRef<HTMLDivElement>(null);
   const outerRef = useRef<HTMLDivElement>(null);
-  const pos = useRef({ x: -100, y: -100 });
+  const lensRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const inner = innerRef.current;
     const outer = outerRef.current;
-    if (!inner || !outer) return;
+    const lens = lensRef.current;
+    if (!inner || !outer || !lens) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const current = { x: target.x, y: target.y };
+    const outerCurrent = { x: target.x, y: target.y };
+    let raf = 0;
 
     // 隐藏默认光标（桌面端）
     document.documentElement.classList.add("cyber-cursor");
 
     // 鼠标移动
     const onMove = (e: MouseEvent) => {
-      gsap.to([inner, outer], {
-        x: e.clientX,
-        y: e.clientY,
-        duration: inner.classList.contains("hover") ? 0.15 : 0.25,
-        ease: "power2.out",
-        overwrite: "auto",
-      });
-      pos.current = { x: e.clientX, y: e.clientY };
+      target.x = e.clientX;
+      target.y = e.clientY;
     };
 
-    // hover 可交互元素 — 光标放大 + 目标元素高亮
-    const onEnter = (e: Event) => {
-      const target = e.currentTarget as HTMLElement;
-      inner.classList.add("hover");
-      target.classList.add("cyber-hover-active");
-      gsap.to(outer, { scale: 2.5, borderColor: "rgba(96,165,250,0.8)", duration: 0.25 });
-      gsap.to(inner, { scale: 0.4, backgroundColor: "rgba(147,197,253,1)", duration: 0.25 });
-    };
-    const onLeave = (e: Event) => {
-      const target = e.currentTarget as HTMLElement;
-      inner.classList.remove("hover");
-      target.classList.remove("cyber-hover-active");
-      gsap.to(outer, { scale: 1, borderColor: "rgba(59,130,246,0.3)", duration: 0.25 });
-      gsap.to(inner, { scale: 1, backgroundColor: "rgba(59,130,246,0.7)", duration: 0.25 });
+    const tick = () => {
+      current.x += (target.x - current.x) * 0.55;
+      current.y += (target.y - current.y) * 0.55;
+      outerCurrent.x += (target.x - outerCurrent.x) * 0.18;
+      outerCurrent.y += (target.y - outerCurrent.y) * 0.18;
+
+      inner.style.transform = `translate3d(${current.x}px, ${current.y}px, 0) translate(-50%, -50%)`;
+      outer.style.transform = `translate3d(${outerCurrent.x}px, ${outerCurrent.y}px, 0) translate(-50%, -50%)`;
+      lens.style.transform = `translate3d(${outerCurrent.x}px, ${outerCurrent.y}px, 0) translate(-50%, -50%)`;
+      raf = requestAnimationFrame(tick);
     };
 
     // 点击脉冲
     const onClick = () => {
-      gsap.fromTo(
-        outer,
-        { scale: 2.5, opacity: 0.6 },
-        { scale: 1, opacity: 0.3, duration: 0.5, ease: "power2.out" }
-      );
+      outer.classList.remove("click-pulse");
+      void outer.offsetWidth;
+      outer.classList.add("click-pulse");
+    };
+
+    const interactiveSelector = "a, button, input, textarea, select, [role='button'], .cursor-hover";
+    let activeTarget: HTMLElement | null = null;
+    const setActiveTarget = (nextTarget: HTMLElement | null) => {
+      if (activeTarget === nextTarget) return;
+      if (activeTarget) activeTarget.classList.remove("cyber-hover-active");
+      activeTarget = nextTarget;
+
+      if (activeTarget) {
+        activeTarget.classList.add("cyber-hover-active");
+        inner.classList.add("hover");
+        outer.classList.add("hover");
+        inner.classList.add("dot-hover");
+        lens.classList.add("active");
+      } else {
+        inner.classList.remove("hover");
+        outer.classList.remove("hover");
+        inner.classList.remove("dot-hover");
+        lens.classList.remove("active");
+      }
+    };
+
+    const onPointerOver = (event: PointerEvent) => {
+      const targetElement = event.target instanceof Element
+        ? event.target.closest(interactiveSelector)
+        : null;
+      setActiveTarget(targetElement instanceof HTMLElement ? targetElement : null);
+    };
+
+    const onPointerOut = (event: PointerEvent) => {
+      if (!activeTarget) return;
+      const related = event.relatedTarget instanceof Element ? event.relatedTarget : null;
+      if (related && activeTarget.contains(related)) return;
+      setActiveTarget(null);
     };
 
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("click", onClick);
-
-    // 监听所有可交互元素
-    const interactiveSelector = "a, button, input, textarea, select, [role='button'], .cursor-hover";
-    const elements = document.querySelectorAll(interactiveSelector);
-    elements.forEach((el) => {
-      el.addEventListener("mouseenter", onEnter);
-      el.addEventListener("mouseleave", onLeave);
-    });
-
-    // MutationObserver 监听新增的可交互元素
-    const observer = new MutationObserver(() => {
-      const newElements = document.querySelectorAll(interactiveSelector);
-      newElements.forEach((el) => {
-        el.removeEventListener("mouseenter", onEnter);
-        el.removeEventListener("mouseleave", onLeave);
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-      });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("pointerover", onPointerOver, { passive: true });
+    document.addEventListener("pointerout", onPointerOut, { passive: true });
+    raf = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("click", onClick);
-      observer.disconnect();
+      document.removeEventListener("pointerover", onPointerOver);
+      document.removeEventListener("pointerout", onPointerOut);
+      cancelAnimationFrame(raf);
       document.documentElement.classList.remove("cyber-cursor");
-      elements.forEach((el) => {
-        el.removeEventListener("mouseenter", onEnter);
-        el.removeEventListener("mouseleave", onLeave);
-      });
+      setActiveTarget(null);
     };
   }, []);
 
   return (
     <>
       {/* 外圈扩散环 */}
+      <div
+        ref={lensRef}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 86,
+          height: 86,
+          borderRadius: "50%",
+          pointerEvents: "none",
+          zIndex: 9998,
+          transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
+        }}
+        className="cyber-cursor-lens"
+      />
       <div
         ref={outerRef}
         style={{
@@ -107,8 +133,9 @@ export default function CyberCursor() {
           border: "1.5px solid rgba(59,130,246,0.3)",
           pointerEvents: "none",
           zIndex: 9999,
-          transform: "translate(-50%, -50%)",
+          transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
         }}
+        className="cyber-cursor-ring"
       />
       {/* 核心小圆点 */}
       <div
@@ -123,9 +150,10 @@ export default function CyberCursor() {
           backgroundColor: "rgba(59,130,246,0.7)",
           pointerEvents: "none",
           zIndex: 10000,
-          transform: "translate(-50%, -50%)",
+          transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
           boxShadow: "0 0 12px rgba(59,130,246,0.5), 0 0 4px rgba(147,197,253,0.3)",
         }}
+        className="cyber-cursor-dot"
       />
     </>
   );

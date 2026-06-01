@@ -102,7 +102,7 @@ export default function Products() {
                       <img
                         src={mediaUrl(product.image, "large") || mediaUrl(product.image) || ""}
                         alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="motion-image h-full w-full object-cover"
                       />
                     </div>
                   )}

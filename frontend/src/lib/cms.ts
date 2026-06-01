@@ -9,7 +9,7 @@
 
 // 开发模式走 Vite 代理，生产模式用环境变量
 const CMS_BASE = import.meta.env.VITE_CMS_URL || "";
-import { deepTranslateStatic } from "./translations-static";
+import { deepLocalizeStatic, deepTranslateStatic } from "./translations-static";
 
 /** Strapi i18n locale 代码 */
 export type StrapiLocale = "zh-Hans" | "en";
@@ -263,6 +263,10 @@ async function fetchSingleType<T>(
     const translated = deepTranslateStatic(data);
     console.log(`[CMS.i18n] Static translation applied`);
     return translated;
+  }
+
+  if (locale === "zh-Hans" && data) {
+    return deepLocalizeStatic(data, "zh-Hans") as T;
   }
 
   console.log(`[CMS] Success: ${apiPath}, locale=${locale || "default"}, data keys=${Object.keys(data || {}).slice(0, 5).join(",")}`);
@@ -631,6 +635,14 @@ export async function fetchPrivacyPage(locale?: StrapiLocale): Promise<LegalPage
 
 export async function fetchTermsPage(locale?: StrapiLocale): Promise<LegalPageData | null> {
   return fetchSingleType<LegalPageData>("/terms-page", [], locale);
+}
+
+export async function fetchEnterpriseServicePage(locale?: StrapiLocale): Promise<LegalPageData | null> {
+  return fetchSingleType<LegalPageData>("/enterprise-service-page", [], locale);
+}
+
+export async function fetchSecurityGovernancePage(locale?: StrapiLocale): Promise<LegalPageData | null> {
+  return fetchSingleType<LegalPageData>("/security-governance-page", [], locale);
 }
 
 export async function fetchSiteSetting(locale?: StrapiLocale): Promise<SiteSettingData | null> {

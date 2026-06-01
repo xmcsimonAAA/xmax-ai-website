@@ -27,6 +27,10 @@ const FALLBACK_CONTENT: Record<PageType, Record<string, string>> = {
   },
 };
 
+function hasChinese(text: string): boolean {
+  return /[\u4e00-\u9fff]/.test(text);
+}
+
 export default function LegalPage({ type }: Props) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -35,12 +39,17 @@ export default function LegalPage({ type }: Props) {
   const isEn = lang === "en";
 
   useEffect(() => {
+    setLoading(true);
+    setTitle("");
+    setContent("");
     const locale = toStrapiLocale(lang);
     const fetcher = type === "privacy" ? fetchPrivacyPage : fetchTermsPage;
     fetcher(locale).then((data: LegalPageData | null) => {
       if (data) {
-        setTitle(data.title || FALLBACK_TITLE[type][isEn ? "en" : "zh"]);
-        setContent(data.content || FALLBACK_CONTENT[type][isEn ? "en" : "zh"]);
+        const fallbackTitle = FALLBACK_TITLE[type][isEn ? "en" : "zh"];
+        const fallbackContent = FALLBACK_CONTENT[type][isEn ? "en" : "zh"];
+        setTitle(data.title || fallbackTitle);
+        setContent(isEn && data.content && hasChinese(data.content) ? fallbackContent : (data.content || fallbackContent));
       } else {
         setTitle(FALLBACK_TITLE[type][isEn ? "en" : "zh"]);
         setContent(FALLBACK_CONTENT[type][isEn ? "en" : "zh"]);

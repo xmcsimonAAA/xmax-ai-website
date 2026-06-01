@@ -740,6 +740,52 @@ export interface ApiContactPageContactPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiEnterpriseServicePageEnterpriseServicePage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'enterprise_service_pages';
+  info: {
+    description: 'Enterprise Service \u9875\u9762\u5185\u5BB9';
+    displayName: '\u4F01\u4E1A\u670D\u52A1\u9875\u9762';
+    pluralName: 'enterprise-service-pages';
+    singularName: 'enterprise-service-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::enterprise-service-page.enterprise-service-page'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   collectionName: 'home_pages';
   info: {
@@ -967,6 +1013,52 @@ export interface ApiProductsPageProductsPage extends Struct.SingleTypeSchema {
     >;
     products: Schema.Attribute.Component<'product.item', true>;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSecurityGovernancePageSecurityGovernancePage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'security_governance_pages';
+  info: {
+    description: 'Security & Governance \u9875\u9762\u5185\u5BB9';
+    displayName: '\u5B89\u5168\u4E0E\u6CBB\u7406\u9875\u9762';
+    pluralName: 'security-governance-pages';
+    singularName: 'security-governance-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::security-governance-page.security-governance-page'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1590,10 +1682,12 @@ declare module '@strapi/strapi' {
       'api::aws-page.aws-page': ApiAwsPageAwsPage;
       'api::business-page.business-page': ApiBusinessPageBusinessPage;
       'api::contact-page.contact-page': ApiContactPageContactPage;
+      'api::enterprise-service-page.enterprise-service-page': ApiEnterpriseServicePageEnterpriseServicePage;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::infrastructure-page.infrastructure-page': ApiInfrastructurePageInfrastructurePage;
       'api::privacy-page.privacy-page': ApiPrivacyPagePrivacyPage;
       'api::products-page.products-page': ApiProductsPageProductsPage;
+      'api::security-governance-page.security-governance-page': ApiSecurityGovernancePageSecurityGovernancePage;
       'api::site-setting.site-setting': ApiSiteSettingSiteSetting;
       'api::terms-page.terms-page': ApiTermsPageTermsPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
