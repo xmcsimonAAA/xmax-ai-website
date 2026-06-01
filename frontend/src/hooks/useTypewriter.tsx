@@ -7,27 +7,37 @@ export function useTypewriter(
   text: string,
   options: { speed?: number; showCursor?: boolean; trigger?: boolean } = {}
 ) {
-  const { speed = 0.04, showCursor = true, trigger = true } = options;
+  const { speed = 0.055, showCursor = true, trigger = true } = options;
   const [displayText, setDisplayText] = useState("");
   const [isDone, setIsDone] = useState(false);
   const rafRef = useRef(0);
 
   useEffect(() => {
-    if (!text || !trigger) return;
+    if (!text || !trigger) {
+      setDisplayText("");
+      setIsDone(false);
+      return;
+    }
     setDisplayText("");
     setIsDone(false);
 
     let charIndex = 0;
     let lastTime = 0;
     const chars = text.split("");
-    const msPerChar = speed * 1000;
+    const baseMsPerChar = Math.max(speed * 1000, 24);
+    const pauseAfter = (char: string) => {
+      if (/[。！？.!?]/.test(char)) return baseMsPerChar * 5;
+      if (/[，、；;,:：]/.test(char)) return baseMsPerChar * 2.5;
+      return baseMsPerChar;
+    };
 
     const step = (timestamp: number) => {
       if (!lastTime) lastTime = timestamp;
       const elapsed = timestamp - lastTime;
+      const currentDelay = pauseAfter(chars[Math.max(0, charIndex - 1)] || "");
 
-      if (elapsed >= msPerChar) {
-        lastTime = timestamp - (elapsed % msPerChar);
+      if (elapsed >= currentDelay) {
+        lastTime = timestamp - (elapsed % currentDelay);
         charIndex++;
         setDisplayText(chars.slice(0, charIndex).join(""));
 
@@ -66,7 +76,7 @@ export function useTypewriter(
 export function TypewriterText({
   text,
   className = "",
-  speed = 0.04,
+  speed = 0.055,
   showCursor = true,
 }: {
   text: string;
@@ -75,10 +85,15 @@ export function TypewriterText({
   showCursor?: boolean;
 }) {
   const { displayText, cursor } = useTypewriter(text, { speed, showCursor });
+  const { displayText: ghostText } = useTypewriter(text, { speed: speed * 0.58, showCursor: false });
   return (
-    <span className={className}>
-      {displayText}
-      <span className="text-blue-400 opacity-70">{cursor}</span>
+    <span className={`typewriter-reserve ${className}`} aria-label={text}>
+      <span className="typewriter-measure" aria-hidden="true">{text}</span>
+      <span className="typewriter-ghost" aria-hidden="true">{ghostText}</span>
+      <span className="typewriter-output" aria-hidden="true">
+        {displayText}
+        {showCursor && <span className="text-blue-400 opacity-70">{cursor}</span>}
+      </span>
     </span>
   );
 }
@@ -88,7 +103,7 @@ export function TypewriterText({
 export function TypewriterOnView({
   text,
   className = "",
-  speed = 0.04,
+  speed = 0.055,
   showCursor = true,
   as: Tag = "span",
 }: {
@@ -121,12 +136,21 @@ export function TypewriterOnView({
     showCursor,
     trigger: triggered,
   });
+  const { displayText: ghostText } = useTypewriter(text, {
+    speed: speed * 0.58,
+    showCursor: false,
+    trigger: triggered,
+  });
 
   const Comp = Tag as any;
   return (
-    <Comp ref={ref} className={className}>
-      {displayText}
-      {showCursor && <span className="text-blue-400 opacity-70">{cursor}</span>}
+    <Comp ref={ref} className={`typewriter-reserve ${className}`} aria-label={text}>
+      <span className="typewriter-measure" aria-hidden="true">{text}</span>
+      <span className="typewriter-ghost" aria-hidden="true">{ghostText}</span>
+      <span className="typewriter-output" aria-hidden="true">
+        {displayText}
+        {showCursor && <span className="text-blue-400 opacity-70">{cursor}</span>}
+      </span>
     </Comp>
   );
 }

@@ -21,6 +21,7 @@ import News from "@/pages/News";
 import NewsArticle from "@/pages/NewsArticle";
 import BusinessUnitPage from "@/pages/BusinessUnitPage";
 import LegalPage from "@/pages/LegalPage";
+import SimpleContentPage from "@/pages/SimpleContentPage";
 
 /**
  * 自定义 hash location hook：剥离 ?scrollTo=xxx 查询参数，
@@ -54,6 +55,12 @@ function AppRouter() {
           </Route>
           <Route path="/terms">
             <LegalPage type="terms" />
+          </Route>
+          <Route path="/enterprise-service">
+            <SimpleContentPage type="enterprise-service" />
+          </Route>
+          <Route path="/security-governance">
+            <SimpleContentPage type="security-governance" />
           </Route>
           <Route>
             <div className="flex min-h-[60vh] items-center justify-center">

@@ -107,7 +107,7 @@ export default function About() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-4 text-4xl text-white sm:text-5xl lg:text-6xl heading-display"
           >
-            <TypewriterText text={headerHeading} speed={0.025} showCursor={false} />
+            <TypewriterText text={headerHeading} speed={0.06} showCursor={false} />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -161,7 +161,7 @@ export default function About() {
             >
               <p className="section-label text-white">{narrativeLabel}</p>
               <h2 className="mt-4 text-3xl text-white sm:text-4xl heading-display">
-                <TypewriterOnView text={narrativeHeading} speed={0.03} showCursor={false} />
+                <TypewriterOnView text={narrativeHeading} speed={0.065} showCursor={false} />
               </h2>
               <p className="mt-4 text-lg text-slate-300">{narrativeParagraph}</p>
             </motion.div>
@@ -200,7 +200,7 @@ export default function About() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-4 text-3xl text-white sm:text-4xl heading-display"
           >
-            <TypewriterOnView text={groupHeading} speed={0.03} showCursor={false} />
+            <TypewriterOnView text={groupHeading} speed={0.065} showCursor={false} />
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}

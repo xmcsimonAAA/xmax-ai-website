@@ -77,7 +77,7 @@ export default function News() {
                     <img
                       src={mediaUrl(updates[0].image) || ""}
                       alt={updates[0].title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="motion-image h-full w-full object-cover"
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-slate-700 to-slate-900" />
@@ -130,7 +130,7 @@ export default function News() {
                       <img
                         src={mediaUrl(item.image, "medium") || mediaUrl(item.image) || ""}
                         alt={item.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="motion-image h-full w-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                     </div>

@@ -1,0 +1,37 @@
+{
+  "kind": "singleType",
+  "collectionName": "enterprise_service_pages",
+  "info": {
+    "singularName": "enterprise-service-page",
+    "pluralName": "enterprise-service-pages",
+    "displayName": "企业服务页面",
+    "description": "Enterprise Service 页面内容"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

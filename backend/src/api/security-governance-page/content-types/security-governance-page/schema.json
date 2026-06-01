@@ -1,0 +1,37 @@
+{
+  "kind": "singleType",
+  "collectionName": "security_governance_pages",
+  "info": {
+    "singularName": "security-governance-page",
+    "pluralName": "security-governance-pages",
+    "displayName": "安全与治理页面",
+    "description": "Security & Governance 页面内容"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  }
+}

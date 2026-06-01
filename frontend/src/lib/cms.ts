@@ -9,7 +9,7 @@
 
 // 开发模式走 Vite 代理，生产模式用环境变量
 const CMS_BASE = import.meta.env.VITE_CMS_URL || "";
-import { deepTranslateStatic } from "./translations-static";
+import { deepLocalizeStatic, deepTranslateStatic } from "./translations-static";
 
 /** Strapi i18n locale 代码 */
 export type StrapiLocale = "zh-Hans" | "en";
@@ -17,6 +17,16 @@ export type StrapiLocale = "zh-Hans" | "en";
 /** 前端 Lang 到 Strapi locale 的映射 */
 export function toStrapiLocale(lang: string): StrapiLocale {
   return lang === "en" ? "en" : "zh-Hans";
+}
+
+function alternateLocale(locale?: StrapiLocale): StrapiLocale | null {
+  if (!locale) return null;
+  return locale === "en" ? "zh-Hans" : "en";
+}
+
+function prepareFallbackData<T>(fallback: T | null, locale?: StrapiLocale): T | null {
+  if (!fallback) return null;
+  return locale === "en" ? (deepTranslateStatic(fallback) as T) : fallback;
 }
 
 // ─── Types ──────────────────────────────────────────
@@ -49,30 +59,9 @@ interface StrapiMedia {
   };
 }
 
-interface StrapiComponent {
-  id: number;
-  [key: string]: unknown;
-}
-
 interface StrapiResponse<T> {
   data: T;
   meta: Record<string, unknown>;
-}
-
-// ─── Helper: build populate URLSearchParams for deep population ──
-// Strapi v5 requires bracket notation: populate[heroSlides][populate]=*
-// JSON-based populate was rejected by Strapi v5
-
-function buildPopulateParams(populateFields: Record<string, unknown>): URLSearchParams {
-  const params = new URLSearchParams();
-  for (const key of Object.keys(populateFields)) {
-    // All listed fields are components — populate their nested fields (especially media)
-    params.set(`populate[${key}][populate]`, "*");
-  }
-  // Also populate top-level media fields (like logo)
-  params.set("populate", "*"); // This won't work together with specific ones...
-  // Actually, let's just add specific populate for each component + also catch top-level media
-  return params;
 }
 
 // ─── Helper: resolve media URL ──────────────────────
@@ -83,6 +72,88 @@ export function mediaUrl(media: StrapiMedia | null | undefined, size?: "thumbnai
     return `${CMS_BASE}${media.formats[size].url}`;
   }
   return `${CMS_BASE}${media.url}`;
+}
+
+function isMissingMedia(media: StrapiMedia | null | undefined): boolean {
+  return !media?.url;
+}
+
+function sharedMedia(
+  media: StrapiMedia | null | undefined,
+  fallback: StrapiMedia | null | undefined
+): StrapiMedia | null {
+  if (isMissingMedia(media)) return fallback ?? null;
+  if (isMissingMedia(fallback)) return media ?? null;
+  return (fallback!.id > media!.id) ? fallback! : media!;
+}
+
+function fillIndexedImages<T extends { image: StrapiMedia | null }>(
+  items: T[] | undefined,
+  fallbackItems: T[] | undefined
+): T[] {
+  const length = Math.max(items?.length ?? 0, fallbackItems?.length ?? 0);
+  return Array.from({ length }, (_, index) => {
+    const item = items?.[index];
+    const fallbackItem = fallbackItems?.[index];
+    if (!item) return fallbackItem;
+    return {
+      ...item,
+      image: sharedMedia(item.image, fallbackItem?.image),
+    };
+  }).filter((item): item is T => Boolean(item));
+}
+
+function fillHeaderImage<T extends { headerImage: StrapiMedia | null }>(
+  data: T,
+  fallback: T | null
+): T {
+  if (!fallback) return data;
+  return { ...data, headerImage: sharedMedia(data.headerImage, fallback.headerImage) };
+}
+
+function mergeHomeMedia(data: HomePageData, fallback: HomePageData | null): HomePageData {
+  if (!fallback) return data;
+  return {
+    ...data,
+    heroSlides: fillIndexedImages(data.heroSlides, fallback.heroSlides),
+    navCards: fillIndexedImages(data.navCards, fallback.navCards),
+    recentUpdates: fillIndexedImages(data.recentUpdates, fallback.recentUpdates),
+  };
+}
+
+function mergeProductsMedia(data: ProductsPageData, fallback: ProductsPageData | null): ProductsPageData {
+  const withHeader = fillHeaderImage(data, fallback);
+  return {
+    ...withHeader,
+    products: fillIndexedImages(withHeader.products, fallback?.products),
+  };
+}
+
+function mergeBusinessMedia(data: BusinessPageData, fallback: BusinessPageData | null): BusinessPageData {
+  const withHeader = fillHeaderImage(data, fallback);
+  const length = Math.max(withHeader.businessUnits?.length ?? 0, fallback?.businessUnits?.length ?? 0);
+  return {
+    ...withHeader,
+    businessUnits: Array.from({ length }, (_, index) => {
+      const unit = withHeader.businessUnits?.[index];
+      const fallbackUnit = fallback?.businessUnits?.[index];
+      if (!unit) return fallbackUnit;
+      const sectionLength = Math.max(unit.sections?.length ?? 0, fallbackUnit?.sections?.length ?? 0);
+      return {
+        ...unit,
+        image: sharedMedia(unit.image, fallbackUnit?.image),
+        sections: Array.from({ length: sectionLength }, (_, sectionIndex) => {
+          const section = unit.sections?.[sectionIndex];
+          const fallbackSection = fallbackUnit?.sections?.[sectionIndex];
+          if (!section) return fallbackSection;
+          return {
+            ...section,
+            image: sharedMedia(section.image, fallbackSection?.image),
+          };
+        }).filter((section): section is BusinessSection => Boolean(section)),
+      };
+    }).filter((unit): unit is BusinessUnit => Boolean(unit)),
+  };
 }
 
 // ─── Helper: Chinese text detection ──────────────────
@@ -106,6 +177,8 @@ interface DeepComponentConfig {
   subComponents: string[];
   /** First-level media fields to populate explicitly (skipped when using wildcard *) */
   mediaFields?: string[];
+  /** Media fields inside sub-components */
+  subComponentMediaFields?: Record<string, string[]>;
 }
 
 async function fetchSingleType<T>(
@@ -129,7 +202,14 @@ async function fetchSingleType<T>(
           params.append(`populate[${field}][populate][${mf}]`, "true");
         }
         for (const subField of deep.subComponents) {
-          params.append(`populate[${field}][populate][${subField}][populate]`, "*");
+          const subMediaFields = deep.subComponentMediaFields?.[subField];
+          if (subMediaFields && subMediaFields.length > 0) {
+            for (const mediaField of subMediaFields) {
+              params.append(`populate[${field}][populate][${subField}][populate][${mediaField}]`, "true");
+            }
+          } else {
+            params.append(`populate[${field}][populate][${subField}][populate]`, "*");
+          }
         }
       } else {
         params.append(`populate[${field}][populate]`, "*");
@@ -183,6 +263,10 @@ async function fetchSingleType<T>(
     const translated = deepTranslateStatic(data);
     console.log(`[CMS.i18n] Static translation applied`);
     return translated;
+  }
+
+  if (locale === "zh-Hans" && data) {
+    return deepLocalizeStatic(data, "zh-Hans") as T;
   }
 
   console.log(`[CMS] Success: ${apiPath}, locale=${locale || "default"}, data keys=${Object.keys(data || {}).slice(0, 5).join(",")}`);
@@ -450,41 +534,99 @@ export interface LegalPageData {
 // ─── API fetch functions ────────────────────────────
 
 export async function fetchHomePage(locale?: StrapiLocale): Promise<HomePageData | null> {
-  return fetchSingleType<HomePageData>("/home-page", [
+  const data = await fetchSingleType<HomePageData>("/home-page", [
     "heroSlides", "navCards", "stats", "recentUpdates", "ctaPrimaryButton", "ctaSecondaryButton",
-  ], locale);
+  ], locale, undefined, {
+    heroSlides: { subComponents: [], mediaFields: ["image"] },
+    navCards: { subComponents: [], mediaFields: ["image"] },
+    recentUpdates: { subComponents: [], mediaFields: ["image"] },
+  });
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<HomePageData>("/home-page", [
+    "heroSlides", "navCards", "stats", "recentUpdates", "ctaPrimaryButton", "ctaSecondaryButton",
+  ], fallbackLocale, undefined, {
+    heroSlides: { subComponents: [], mediaFields: ["image"] },
+    navCards: { subComponents: [], mediaFields: ["image"] },
+    recentUpdates: { subComponents: [], mediaFields: ["image"] },
+  });
+  return mergeHomeMedia(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchAboutPage(locale?: StrapiLocale): Promise<AboutPageData | null> {
-  return fetchSingleType<AboutPageData>("/about-page", [
+  const data = await fetchSingleType<AboutPageData>("/about-page", [
     "values", "highlights", "subsidiaries",
   ], locale, ["headerImage"]);
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<AboutPageData>("/about-page", [
+    "values", "highlights", "subsidiaries",
+  ], fallbackLocale, ["headerImage"]);
+  return fillHeaderImage(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchInfrastructurePage(locale?: StrapiLocale): Promise<InfrastructurePageData | null> {
-  return fetchSingleType<InfrastructurePageData>("/infrastructure-page", ["layers"], locale, ["headerImage"]);
+  const data = await fetchSingleType<InfrastructurePageData>("/infrastructure-page", ["layers"], locale, ["headerImage"]);
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<InfrastructurePageData>("/infrastructure-page", ["layers"], fallbackLocale, ["headerImage"]);
+  return fillHeaderImage(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchProductsPage(locale?: StrapiLocale): Promise<ProductsPageData | null> {
-  return fetchSingleType<ProductsPageData>("/products-page", ["products"], locale, ["headerImage"]);
+  const data = await fetchSingleType<ProductsPageData>("/products-page", ["products"], locale, ["headerImage"], {
+    products: { subComponents: [], mediaFields: ["image"] },
+  });
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<ProductsPageData>("/products-page", ["products"], fallbackLocale, ["headerImage"], {
+    products: { subComponents: [], mediaFields: ["image"] },
+  });
+  return mergeProductsMedia(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchBusinessPage(locale?: StrapiLocale): Promise<BusinessPageData | null> {
-  return fetchSingleType<BusinessPageData>("/business-page", ["businessUnits"], locale, ["headerImage"], {
-    businessUnits: { subComponents: ["sections"], mediaFields: ["image"] },
+  const data = await fetchSingleType<BusinessPageData>("/business-page", ["businessUnits"], locale, ["headerImage"], {
+    businessUnits: {
+      subComponents: ["sections"],
+      mediaFields: ["image"],
+      subComponentMediaFields: { sections: ["image"] },
+    },
   });
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<BusinessPageData>("/business-page", ["businessUnits"], fallbackLocale, ["headerImage"], {
+    businessUnits: {
+      subComponents: ["sections"],
+      mediaFields: ["image"],
+      subComponentMediaFields: { sections: ["image"] },
+    },
+  });
+  return mergeBusinessMedia(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchAwsPage(locale?: StrapiLocale): Promise<AwsPageData | null> {
-  return fetchSingleType<AwsPageData>("/aws-page", [
+  const data = await fetchSingleType<AwsPageData>("/aws-page", [
     "narrativePoints", "awsStats", "coreMessages", "capabilityMappings",
   ], locale, ["headerImage"]);
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<AwsPageData>("/aws-page", [
+    "narrativePoints", "awsStats", "coreMessages", "capabilityMappings",
+  ], fallbackLocale, ["headerImage"]);
+  return fillHeaderImage(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchContactPage(locale?: StrapiLocale): Promise<ContactPageData | null> {
-  return fetchSingleType<ContactPageData>("/contact-page", [
+  const data = await fetchSingleType<ContactPageData>("/contact-page", [
     "contactPoints",
   ], locale, ["headerImage"]);
+  const fallbackLocale = alternateLocale(locale);
+  if (!data || !fallbackLocale) return data;
+  const fallback = await fetchSingleType<ContactPageData>("/contact-page", [
+    "contactPoints",
+  ], fallbackLocale, ["headerImage"]);
+  return fillHeaderImage(data, prepareFallbackData(fallback, locale));
 }
 
 export async function fetchPrivacyPage(locale?: StrapiLocale): Promise<LegalPageData | null> {
@@ -493,6 +635,14 @@ export async function fetchPrivacyPage(locale?: StrapiLocale): Promise<LegalPage
 
 export async function fetchTermsPage(locale?: StrapiLocale): Promise<LegalPageData | null> {
   return fetchSingleType<LegalPageData>("/terms-page", [], locale);
+}
+
+export async function fetchEnterpriseServicePage(locale?: StrapiLocale): Promise<LegalPageData | null> {
+  return fetchSingleType<LegalPageData>("/enterprise-service-page", [], locale);
+}
+
+export async function fetchSecurityGovernancePage(locale?: StrapiLocale): Promise<LegalPageData | null> {
+  return fetchSingleType<LegalPageData>("/security-governance-page", [], locale);
 }
 
 export async function fetchSiteSetting(locale?: StrapiLocale): Promise<SiteSettingData | null> {

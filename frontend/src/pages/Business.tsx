@@ -45,27 +45,48 @@ function mapBusinessUnit(unit: BusinessUnit, index: number): BusinessItem {
 }
 
 export default function Business() {
-  const [headerLabel, setHeaderLabel] = useState("Business Units");
-  const [headerHeading, setHeaderHeading] = useState("9 大业务板块");
-  const [headerParagraph, setHeaderParagraph] = useState(
-    "平台能力通过 9 个明确业务板块形成行业化落地网络。每个板块都与统一 AI 基础设施连接，并承担不同产业场景中的服务角色。"
-  );
-  const [items, setItems] = useState<BusinessItem[]>(fallbackItems);
+  const [headerLabel, setHeaderLabel] = useState<string | null>(null);
+  const [headerHeading, setHeaderHeading] = useState<string | null>(null);
+  const [headerParagraph, setHeaderParagraph] = useState<string | null>(null);
+  const [items, setItems] = useState<BusinessItem[]>([]);
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
+    setLoading(true);
+    setHeaderLabel(null);
+    setHeaderHeading(null);
+    setHeaderParagraph(null);
+    setItems([]);
+    setHeaderImage(null);
     fetchBusinessPage(toStrapiLocale(lang)).then((data: BusinessPageData | null) => {
-      if (!data) return;
-      if (data.headerLabel) setHeaderLabel(data.headerLabel);
-      if (data.headerHeading) setHeaderHeading(data.headerHeading);
-      if (data.headerParagraph) setHeaderParagraph(data.headerParagraph);
+      if (!data) {
+        setHeaderLabel(lang === "zh" ? "业务板块" : "Business Units");
+        setHeaderHeading(t(B, "headerHeading", lang));
+        setHeaderParagraph(t(B, "headerParagraph", lang));
+        setItems(lang === "zh" ? fallbackItems : []);
+        setLoading(false);
+        return;
+      }
+      setHeaderLabel(data.headerLabel || (lang === "zh" ? "业务板块" : "Business Units"));
+      setHeaderHeading(data.headerHeading || t(B, "headerHeading", lang));
+      setHeaderParagraph(data.headerParagraph || t(B, "headerParagraph", lang));
       if (data.businessUnits && data.businessUnits.length > 0) {
         setItems(data.businessUnits.map(mapBusinessUnit));
       }
       if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      setLoading(false);
     });
   }, [lang]);
+
+  if (loading || !headerLabel || !headerHeading || !headerParagraph) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -95,7 +116,7 @@ export default function Business() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-6 text-4xl text-white sm:text-5xl lg:text-6xl heading-display"
           >
-            <TypewriterText text={headerHeading} speed={0.025} showCursor={false} />
+            <TypewriterText text={headerHeading} speed={0.06} showCursor={false} />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -128,7 +149,7 @@ export default function Business() {
                   <img
                     src={item.imageUrl}
                     alt={item.title}
-                    className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    className="motion-image h-full w-full object-cover"
                   />
                 ) : (
                   <div className="h-full w-full bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800" />
@@ -157,7 +178,7 @@ export default function Business() {
 
                       {/* Title — SpaceX style: massive, bold, tight tracking */}
                       <h3 className="heading-display text-3xl lg:text-6xl text-white">
-                        <TypewriterOnView text={item.title} speed={0.03} showCursor={false} />
+                        <TypewriterOnView text={item.title} speed={0.065} showCursor={false} />
                       </h3>
 
                       {/* Subtitle — medium weight, clear */}

@@ -28,6 +28,107 @@ def insert_component(table, fields, values, page_table, page_id, component_type,
     return cmp_id
 
 
+def copy_header_image_to_localizations(page_table, related_type):
+    """Copy header image media relations from the populated locale to sibling locales."""
+    cur.execute(f"""
+        INSERT INTO files_related_mph (file_id, related_id, related_type, field, `order`)
+        SELECT src.file_id, target.id, src.related_type, src.field, src.`order`
+        FROM files_related_mph src
+        JOIN {page_table} source ON source.id = src.related_id
+        JOIN {page_table} target
+          ON target.document_id = source.document_id
+         AND target.id != source.id
+        WHERE src.related_type = ?
+          AND src.field = 'headerImage'
+          AND NOT EXISTS (
+            SELECT 1
+            FROM files_related_mph existing
+            WHERE existing.related_type = src.related_type
+              AND existing.related_id = target.id
+              AND existing.field = src.field
+          )
+    """, (related_type,))
+
+
+# ─── Home Page ─────────────────────────────────────────
+print("Filling Home page...")
+cur.execute("SELECT id FROM home_pages LIMIT 1")
+row = cur.fetchone()
+if not row:
+    cur.execute("""INSERT INTO home_pages (document_id, mission_label, mission_heading, mission_paragraph,
+        created_at, updated_at, published_at, created_by_id, updated_by_id, locale)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, ?)""",
+        ("home-page-doc", "Our Mission",
+         "连接全球 AI 推理服务基础设施与产业创新",
+         "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。",
+         NOW, NOW, NOW, "zh-Hans"))
+    home_id = cur.lastrowid
+else:
+    home_id = row[0]
+    cur.execute("""UPDATE home_pages SET mission_label=?, mission_heading=?, mission_paragraph=?,
+        updated_at=?, locale=? WHERE id=?""",
+        ("Our Mission", "连接全球 AI 推理服务基础设施与产业创新",
+         "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。",
+         NOW, "zh-Hans", home_id))
+    cur.execute("DELETE FROM home_pages_cmps WHERE entity_id = ?", (home_id,))
+
+order = 1.0
+for title, subtitle, tags, bg in [
+    (
+        "全球 AI 推理服务基础设施",
+        "基于云原生架构与行业化能力，为全球多场景业务提供可扩展、低时延、高可用的 AI 推理服务。",
+        "AI Inference,Cloud Native,Global Infrastructure",
+        "blue",
+    ),
+    (
+        "平台能力 × 行业落地",
+        "通过 9 大业务板块把模型服务、智能体、知识检索与安全治理转化为真实产业价值。",
+        "Platform,Products,Industry Deployment",
+        "indigo",
+    ),
+]:
+    insert_component("components_home_hero_slides", ["title", "subtitle", "tags", "bg_gradient"],
+                     [title, subtitle, tags, bg], "home_pages", home_id, "home.hero-slide", "heroSlides", order)
+    order += 2.0
+
+order = 1.0
+for icon, title, desc, url in [
+    ("Globe", "AI 基础设施", "全球推理服务底座与跨区域部署能力", "/infrastructure"),
+    ("Box", "AI 产品矩阵", "模型网关、智能体、知识引擎与安全治理产品", "/products"),
+    ("Building2", "九大业务板块", "面向电商、互娱、金融、生命科学等行业落地", "/business"),
+]:
+    insert_component("components_home_nav_cards", ["icon", "title", "description", "url"],
+                     [icon, title, desc, url], "home_pages", home_id, "home.nav-card", "navCards", order)
+    order += 2.0
+
+order = 1.0
+for value, label in [
+    ("9", "业务板块"),
+    ("5", "平台能力层"),
+    ("24/7", "全球服务愿景"),
+]:
+    insert_component("components_home_stat_items", ["value", "label"],
+                     [value, label], "home_pages", home_id, "home.stat-item", "stats", order)
+    order += 2.0
+
+order = 1.0
+for date, title, tag in [
+    ("2026", "XMAX AI Inc 官网内容管理体系启动", "CMS"),
+    ("2026", "全球 AI 推理服务基础设施叙事升级", "Infrastructure"),
+    ("2026", "九大业务板块内容结构完成", "Business"),
+]:
+    insert_component("components_home_update_items", ["date", "title", "tag"],
+                     [date, title, tag], "home_pages", home_id, "home.update-item", "recentUpdates", order)
+    order += 2.0
+
+insert_component("components_home_cta_buttons", ["text", "url"],
+                 ["联系我们", "/contact"], "home_pages", home_id, "home.cta-button", "ctaPrimaryButton", 1.0, single=True)
+insert_component("components_home_cta_buttons", ["text", "url"],
+                 ["了解更多", "/about"], "home_pages", home_id, "home.cta-button", "ctaSecondaryButton", 1.0, single=True)
+
+print("  ✓ Home page done")
+
+
 # ─── About Page ────────────────────────────────────────
 print("Filling About page...")
 cur.execute("SELECT id FROM about_pages LIMIT 1")
@@ -88,20 +189,20 @@ for content in [
     order += 2.0
 
 order = 1.0
-for biz, legal, alias in [
-    ("管理运营平台", "XMAX AI Inc", "XMAX AI"),
-    ("电商", "XMAX E-Commerce Pte. Ltd.", "XMAX 电商"),
-    ("互娱", "XMAX Interactive Entertainment Pte. Ltd.", "XMAX 互娱"),
-    ("供应链服务", "XMAX Supply Chain Pte. Ltd.", "XMAX 供应链"),
-    ("太空计算", "XMAX Space Computing Pte. Ltd.", "XMAX 太空"),
-    ("机器人", "XMAX Robotics Pte. Ltd.", "XMAX 机器人"),
-    ("生命科学", "XMAX Life Sciences Pte. Ltd.", "XMAX 生命科学"),
-    ("金融", "XMAX Financial Services Pte. Ltd.", "XMAX 金融"),
-    ("安全", "XMAX Security Pte. Ltd.", "XMAX 安全"),
-    ("企业服务", "XMAX Enterprise Services Pte. Ltd.", "XMAX 企业服务"),
+for biz, legal in [
+    ("管理运营平台", "XMAX AI Inc"),
+    ("电商", "XMAX E-Commerce Pte. Ltd."),
+    ("互娱", "XMAX Interactive Entertainment Pte. Ltd."),
+    ("供应链服务", "XMAX Supply Chain Pte. Ltd."),
+    ("太空计算", "XMAX Space Computing Pte. Ltd."),
+    ("机器人", "XMAX Robotics Pte. Ltd."),
+    ("生命科学", "XMAX Life Sciences Pte. Ltd."),
+    ("金融", "XMAX Financial Services Pte. Ltd."),
+    ("安全", "XMAX Security Pte. Ltd."),
+    ("企业服务", "XMAX Enterprise Services Pte. Ltd."),
 ]:
-    insert_component("components_about_subsidiarys", ["business", "legal_name", "alias"],
-                     [biz, legal, alias], "about_pages", about_id, "about.subsidiary", "subsidiaries", order)
+    insert_component("components_about_subsidiarys", ["business", "legal_name"],
+                     [biz, legal], "about_pages", about_id, "about.subsidiary", "subsidiaries", order)
     order += 2.0
 
 print("  ✓ About page done")
@@ -241,8 +342,8 @@ biz_units = [
 ]
 for title, legal, en_title, alias, desc, tags, infra, en_desc in biz_units:
     insert_component("components_business_units",
-                     ["title", "alias", "en_title", "subtitle", "description", "tags", "scenes", "infra_relation", "en_desc"],
-                     [title, alias, en_title, title, desc, tags, tags, infra, en_desc],
+                     ["title", "alias", "subtitle", "description", "tags", "scenes", "infra_relation"],
+                     [title, alias, legal, desc, tags, tags, infra],
                      "business_pages", biz_id, "business.unit", "businessUnits", order)
     order += 2.0
 
@@ -255,12 +356,11 @@ cur.execute("SELECT id FROM aws_pages LIMIT 1")
 row = cur.fetchone()
 if not row:
     cur.execute("""INSERT INTO aws_pages (document_id, header_label, header_heading, header_paragraph,
-        quote_english, quote_chinese,
+        quote_chinese,
         created_at, updated_at, published_at, created_by_id, updated_by_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1)""",
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 1)""",
         ("aws-page-doc", "AWS Infrastructure",
          "基于 AWS 全球基础设施构建 AI 推理服务能力",
-         "XMAX AI Inc leverages AWS global infrastructure to build scalable AI inference services for multi-industry deployment.",
          "XMAX AI Inc leverages AWS global infrastructure to build scalable AI inference services for multi-industry deployment.",
          "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。",
          NOW, NOW, NOW))
@@ -268,9 +368,8 @@ if not row:
 else:
     aws_id = row[0]
     cur.execute("""UPDATE aws_pages SET header_label=?, header_heading=?, header_paragraph=?,
-        quote_english=?, quote_chinese=?, updated_at=? WHERE id=?""",
+        quote_chinese=?, updated_at=? WHERE id=?""",
         ("AWS Infrastructure", "基于 AWS 全球基础设施构建 AI 推理服务能力",
-         "XMAX AI Inc leverages AWS global infrastructure to build scalable AI inference services for multi-industry deployment.",
          "XMAX AI Inc leverages AWS global infrastructure to build scalable AI inference services for multi-industry deployment.",
          "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。",
          NOW, aws_id))
@@ -430,6 +529,28 @@ print("  ✓ Site Settings done")
 
 
 # ─── Commit ────────────────────────────────────────────
+for table in [
+    "home_pages",
+    "about_pages",
+    "infrastructure_pages",
+    "products_pages",
+    "business_pages",
+    "aws_pages",
+    "contact_pages",
+    "site_settings",
+]:
+    cur.execute(f"UPDATE {table} SET locale = ? WHERE locale IS NULL OR locale = ''", ("zh-Hans",))
+
+for table, related_type in [
+    ("about_pages", "api::about-page.about-page"),
+    ("infrastructure_pages", "api::infrastructure-page.infrastructure-page"),
+    ("products_pages", "api::products-page.products-page"),
+    ("business_pages", "api::business-page.business-page"),
+    ("aws_pages", "api::aws-page.aws-page"),
+    ("contact_pages", "api::contact-page.contact-page"),
+]:
+    copy_header_image_to_localizations(table, related_type)
+
 conn.commit()
 conn.close()
 print("\n✅ All CMS data populated successfully!")

@@ -1,0 +1,4 @@
+.DS_Store
+.codex-backups/
+__pycache__/
+*.pyc

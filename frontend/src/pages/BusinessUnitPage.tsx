@@ -17,6 +17,8 @@ export default function BusinessUnitPage() {
   const [loading, setLoading] = useState(true);
   const { lang } = useLang();
   const [, navigate] = useLocation();
+  const backLabel = lang === "zh" ? "返回" : "Back";
+  const notFoundLabel = lang === "zh" ? "未找到业务板块" : "Business unit not found";
 
   // Extract unit id from URL hash: #/business/01 → 01
   const rawId = typeof window !== "undefined"
@@ -49,10 +51,10 @@ export default function BusinessUnitPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center bg-slate-950">
         <h1 className="text-6xl font-bold text-slate-200">404</h1>
-        <p className="mt-4 text-slate-500">Business unit not found</p>
+        <p className="mt-4 text-slate-500">{notFoundLabel}</p>
         <button onClick={() => navigate("/business")}
           className="mt-6 border border-slate-700 px-6 py-2 text-sm text-slate-300 hover:text-white">
-          ← Back
+          ← {backLabel}
         </button>
       </div>
     );
@@ -78,7 +80,7 @@ export default function BusinessUnitPage() {
 
         <button onClick={() => navigate("/business")}
           className="absolute left-6 top-6 z-20 flex items-center gap-2 border border-white/10 bg-black/30 px-4 py-2 text-sm text-white/80 backdrop-blur-md transition-all hover:bg-black/50 hover:text-white lg:left-12 lg:top-8">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {backLabel}
         </button>
 
         <div className="relative z-10 w-full">
@@ -149,7 +151,7 @@ export default function BusinessUnitPage() {
                   {sectionImage ? (
                     <>
                       <img src={sectionImage} alt={section.heading || ""}
-                        className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+                        className="motion-image h-full w-full object-cover" />
                       {/* Gradient overlay — fade image edge into black towards text side */}
                       <div className={`absolute inset-y-0 w-48 pointer-events-none ${
                         isEven ? "right-0 bg-gradient-to-l from-black via-black/60 to-transparent" 

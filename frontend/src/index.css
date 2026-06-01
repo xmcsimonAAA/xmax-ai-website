@@ -190,6 +190,151 @@
     font-family: var(--font-display);
   }
 
+  .typewriter-reserve {
+    display: grid;
+    grid-template-areas: "text";
+    align-items: start;
+  }
+
+  .typewriter-reserve > .typewriter-measure,
+  .typewriter-reserve > .typewriter-ghost,
+  .typewriter-reserve > .typewriter-output {
+    grid-area: text;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .typewriter-reserve > .typewriter-measure {
+    visibility: hidden;
+  }
+
+  .typewriter-reserve > .typewriter-ghost {
+    color: rgba(147, 197, 253, 0.11);
+    filter: blur(0.5px);
+    opacity: 0.68;
+    transform: translate3d(0.03em, 0.035em, 0);
+    text-shadow:
+      0 0 18px rgba(56, 189, 248, 0.16),
+      0 0 40px rgba(37, 99, 235, 0.10);
+    will-change: contents;
+  }
+
+  .typewriter-reserve > .typewriter-output {
+    position: relative;
+    z-index: 1;
+    will-change: contents;
+  }
+
+  .motion-image {
+    transform: translateZ(0) scale(1);
+    transform-origin: center;
+    backface-visibility: hidden;
+    will-change: transform;
+    transition:
+      transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 420ms ease;
+  }
+
+  .group:hover .motion-image,
+  .motion-image:hover {
+    transform: translateZ(0) scale(1.035);
+    filter: saturate(1.08) contrast(1.04);
+  }
+
+  .group:hover .motion-image {
+    animation: image-signal-flash 720ms steps(2, end) both;
+  }
+
+  @keyframes image-signal-flash {
+    0%, 100% {
+      filter: saturate(1.08) contrast(1.04);
+    }
+    12% {
+      filter: blur(5px) saturate(1.8) hue-rotate(18deg) brightness(1.15);
+    }
+    22% {
+      filter: blur(0) saturate(1.15) hue-rotate(-10deg) brightness(1.02);
+    }
+    34% {
+      filter: blur(2px) saturate(1.55) hue-rotate(24deg) brightness(1.1);
+    }
+    48% {
+      filter: saturate(1.08) contrast(1.04);
+    }
+  }
+
+  .cyber-cursor-ring {
+    opacity: 0.72;
+    transition:
+      width 180ms ease,
+      height 180ms ease,
+      border-color 180ms ease,
+      opacity 180ms ease;
+    will-change: transform, width, height;
+  }
+
+  .cyber-cursor-ring.hover {
+    width: 52px !important;
+    height: 52px !important;
+    border-color: rgba(96,165,250,0.75) !important;
+    opacity: 0.9;
+  }
+
+  .cyber-cursor-ring.click-pulse {
+    animation: cursor-ring-pulse 360ms ease-out;
+  }
+
+  .cyber-cursor-dot {
+    transition:
+      width 180ms ease,
+      height 180ms ease,
+      background-color 180ms ease,
+      opacity 180ms ease;
+    will-change: transform, width, height;
+  }
+
+  .cyber-cursor-dot.dot-hover {
+    width: 5px !important;
+    height: 5px !important;
+    background-color: rgba(147,197,253,1) !important;
+  }
+
+  .cyber-cursor-lens {
+    opacity: 0;
+    transform-origin: center;
+    backdrop-filter: invert(1) hue-rotate(180deg) saturate(1.45) contrast(1.1);
+    -webkit-backdrop-filter: invert(1) hue-rotate(180deg) saturate(1.45) contrast(1.1);
+    background:
+      radial-gradient(circle at 35% 32%, rgba(255,255,255,0.24), transparent 0 18%, rgba(255,255,255,0.08) 36%, transparent 68%),
+      rgba(226, 232, 240, 0.10);
+    border: 1px solid rgba(147, 197, 253, 0.58);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08) inset,
+      0 0 36px rgba(59,130,246,0.28),
+      0 16px 48px rgba(2,6,23,0.38);
+    mix-blend-mode: normal;
+    transition:
+      opacity 180ms ease,
+      width 180ms ease,
+      height 180ms ease,
+      border-color 180ms ease;
+    will-change: transform, opacity;
+  }
+
+  .cyber-cursor-lens.active {
+    opacity: 1;
+  }
+
+  @keyframes cursor-ring-pulse {
+    0% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0.45;
+    }
+  }
+
   /* ─── Premium Hover Effects ─────────────────── */
   .hover-glow {
     transition: text-shadow 0.4s ease, transform 0.4s ease;

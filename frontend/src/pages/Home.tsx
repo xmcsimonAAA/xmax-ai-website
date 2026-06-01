@@ -157,7 +157,7 @@ export default function Home() {
                   <TypewriterText
                     key={`hero-title-${heroIndex}`}
                     text={currentSlide.title}
-                    speed={0.025}
+                    speed={0.06}
                     showCursor={false}
                   />
                 </h1>
@@ -266,7 +266,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-6 text-4xl leading-tight text-white sm:text-5xl lg:text-6xl heading-display"
             >
-              <TypewriterOnView text={data?.missionHeading || t(H, "missionHeading", lang)} speed={0.03} showCursor={false} />
+              <TypewriterOnView text={data?.missionHeading || t(H, "missionHeading", lang)} speed={0.065} showCursor={false} />
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -283,7 +283,7 @@ export default function Home() {
 
       {/* ─── Navigation Cards (full-bleed image style) ── */}
       {navCards.length > 0 && (
-        <section className="bg-black">
+        <section className="relative overflow-hidden bg-black">
           <div className="grid grid-cols-1">
             {navCards.map((card, index) => (
               <motion.a
@@ -301,16 +301,19 @@ export default function Home() {
                     <img
                       src={mediaUrl(card.image, "large") || mediaUrl(card.image) || ""}
                       alt={card.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="motion-image h-full w-full object-cover"
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900" />
                   )}
                 </div>
                 {/* Top gradient — blend from black above */}
-                <div className="absolute inset-x-0 top-0 h-52 bg-gradient-to-b from-black via-black/70 to-transparent" />
+                <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-black via-black/65 to-transparent lg:h-72" />
                 {/* Bottom gradient — blend into text area */}
-                <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-black via-black/75 to-transparent lg:h-96" />
+                {index < navCards.length - 1 && (
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-black/55 to-black" />
+                )}
                 {/* Text content — overlaid on image */}
                 <div className="relative z-10 w-full px-8 pb-16 lg:px-16 lg:pb-20">
                   <div className="mx-auto max-w-4xl">
@@ -402,7 +405,7 @@ export default function Home() {
                       <img
                         src={mediaUrl(item.image, "medium") || mediaUrl(item.image) || ""}
                         alt={item.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="motion-image h-full w-full object-cover"
                       />
                     </div>
                   )}
@@ -430,7 +433,7 @@ export default function Home() {
           className="mx-auto max-w-7xl px-8 lg:px-12 text-center"
         >
           <h2 className="text-4xl heading-display text-white sm:text-5xl">
-            <TypewriterOnView text={t(H, "ctaHeading", lang)} speed={0.03} showCursor={false} />
+            <TypewriterOnView text={t(H, "ctaHeading", lang)} speed={0.065} showCursor={false} />
           </h2>
           <p className="mt-6 text-xl text-slate-300 font-light max-w-2xl mx-auto">
             {t(H, "ctaParagraph", lang)}
