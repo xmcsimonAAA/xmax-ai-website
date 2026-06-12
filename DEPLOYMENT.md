@@ -196,6 +196,24 @@ npm run build
 - 后端可使用 DeepL API 自动翻译内容，需要配置 `DEEPL_API_KEY`
 - 前端包含静态翻译兜底，避免英文页面出现大量中文混杂
 
+注意：Strapi 管理后台界面固定使用英文 Admin UI。这里指的是后台系统菜单、媒体库、Content Manager 等管理界面语言，不影响网站前台中英文内容。
+
+不要把 `backend/src/admin/app.js` 改成强制 `zh-Hans`，也不要添加不完整的后台中文翻译表，否则 Strapi Admin 的内容管理和媒体库页面可能出现 `Cannot read properties of undefined (reading 'sort')` 报错。
+
+如果线上后台用户曾经使用过中文 Admin UI，请在部署后执行一次：
+
+```bash
+sqlite3 backend/.tmp/data.db "UPDATE admin_users SET prefered_language='en';"
+```
+
+然后重新构建并重启后端：
+
+```bash
+cd backend
+npm run build
+npm run start
+```
+
 ## 9. 交付建议
 
 完整可运行交付包建议包含：
@@ -266,4 +284,3 @@ npm run dev
 前端: http://localhost:5174/
 后台: http://localhost:1337/admin
 ```
-
