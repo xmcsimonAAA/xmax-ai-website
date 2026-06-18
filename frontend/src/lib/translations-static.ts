@@ -31,6 +31,7 @@ const TRANS_MAP: Record<string, string> = {
   "XMAX AI Inc 依托 XMAX 集团体系，面向全球构建可扩展、可治理、可落地的 AI 推理服务平台": "Under the XMAX Group system, XMAX AI Inc builds scalable, governable, and deployable AI inference platforms for global markets.",
   "XMAX AI Inc 依托 XMAX 集团，通过 9 大业务板块将可扩展、可治理的 AI 推理服务落地于商业与社会场景": "Leveraging the XMAX Group ecosystem, XMAX AI Inc deploys scalable and governable AI inference services across 9 business segments for commercial and societal applications.",
   "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。": "XMAX AI Inc builds scalable AI inference service capabilities on AWS global infrastructure, supporting cross-region deployment, low-latency response, high-availability operation, and multi-industry scenario replication.",
+  "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。": "XMAX AI Inc is the AI platform and industrial service carrier of XMAX Group, advancing platform capabilities, productized output, and industry implementation.",
   "XMAX AI Inc 通过统一的 AI 基础设施，连接产业 AI 创新与现实世界应用": "XMAX AI Inc bridges industrial AI innovation with real-world deployment through unified infrastructure.",
   "XMAX AI 与 AWS 深化全球合作伙伴关系": "XMAX AI & AWS Deepen Global Partnership",
   "XMAX AI 完成新一轮战略融资": "XMAX AI Completes New Strategic Investment Round",
@@ -100,6 +101,8 @@ const TRANS_MAP: Record<string, string> = {
   "全球推理网关": "Global Inference Gateway",
   "全球部署区域": "Global Deployment Regions",
   "公司新闻": "Company News",
+  "查看业务版图": "View Business Map",
+  "联系合作": "Contact for Partnership",
   "关于我们": "About",
   "关注我们": "Follow Us",
   "具身智能": "Embodied Intelligence",
@@ -264,6 +267,7 @@ const TRANS_MAP: Record<string, string> = {
   "智能知识服务": "Intelligent Knowledge Services",
   "智能调度": "Intelligent Scheduling",
   "智能风控与量化交易": "Intelligent Risk Control & Quantitative Trading",
+  "量化策略执行": "Quantitative Strategy Execution",
   "服务可用性": "Service Availability",
   "服务对象": "Service Targets",
   "服务机器人与场景任务执行": "Service Robot & Scenario Task Execution",
@@ -287,6 +291,7 @@ const TRANS_MAP: Record<string, string> = {
   "模型管理": "Model Management",
   "模型管理,API 治理,配额控制": "Model management, API governance, quota control",
   "模型网关": "Model Gateway",
+  "音乐创作辅助": "Music Creation Assistance",
   "治理策略": "Governance Strategy",
   "法律信息": "Legal",
   "流程效率优化": "Process Efficiency Optimization",
@@ -364,6 +369,15 @@ const TRANS_MAP: Record<string, string> = {
   "运营": "Operations",
   "运营决策支持": "Operations Decision Support",
   "运营辅助": "Operations Assistance",
+  "依赖 Agent Runtime 与 Data Retrieval Layer": "Depends on Agent Runtime and Data Retrieval Layer",
+  "依赖 Agent Runtime 与 Model Gateway": "Depends on Agent Runtime and Model Gateway",
+  "依赖 Data Retrieval Layer 与 Security Mesh": "Depends on Data Retrieval Layer and Security Mesh",
+  "依赖 Inference Fabric 与 Global Distribution": "Depends on Inference Fabric and Global Distribution",
+  "依赖 Inference Fabric 与 Model Gateway": "Depends on Inference Fabric and Model Gateway",
+  "依赖 Inference Fabric 与 Security Mesh": "Depends on Inference Fabric and Security Mesh",
+  "依赖 Security Mesh 与 Inference Fabric": "Depends on Security Mesh and Inference Fabric",
+  "依赖 Security Mesh 全栈能力": "Depends on full-stack Security Mesh capabilities",
+  "依赖全栈基础设施能力": "Depends on full-stack infrastructure capabilities",
   "远程协同": "Remote Collaboration",
   "远距协同": "Remote Collaboration",
   "远距离、多节点协同的数据处理与决策支持": "Long-Distance, Multi-Node Collaborative Data Processing & Decision Support",
@@ -381,6 +395,7 @@ const TRANS_MAP: Record<string, string> = {
   "金融": "Finance",
   "金融客服与业务咨询智能化": "Financial Customer Service & Business Consultation Intelligence",
   "金融板块通过 XMAX AI 的模型网关与安全治理层，实现风控模型、客服模型与审计模型的统一接入与合规运行。": "The Finance segment leverages XMAX AI's model gateway and security governance layer to achieve unified access and compliant operation of risk control, customer service, and auditing models.",
+  "金融板块建立在 XMAX AI 的安全治理层、统一推理层与审计能力之上，强调可靠性、可追踪性与服务连续性。": "The Finance segment is built on XMAX AI's security governance layer, unified inference layer, and audit capabilities, emphasizing reliability, traceability, and service continuity.",
   "集团定位": "Group Positioning",
   "集团总部": "Group Headquarters",
   "需求预测": "Demand Forecasting",
@@ -551,8 +566,24 @@ export function deepLocalizeStatic<T>(data: T, target: "zh-Hans" | "en"): T {
     if (data.includes("\n")) {
       return data
         .split("\n")
-        .map((line) => translateStaticToZh(line.trim()))
+        .map((line) => {
+          const prefix = line.match(/^(\s*·\s*)/)?.[1] || "";
+          const bare = line.replace(/^\s*·\s*/, "").trim();
+          return `${prefix}${translateStaticToZh(bare)}`;
+        })
         .join("\n") as unknown as T;
+    }
+    if (data.includes(",")) {
+      return data
+        .split(",")
+        .map((segment) => translateStaticToZh(segment.trim()))
+        .join("、") as unknown as T;
+    }
+    if (data.includes(" / ")) {
+      return data
+        .split(" / ")
+        .map((segment) => translateStaticToZh(segment.trim()))
+        .join(" / ") as unknown as T;
     }
     return data;
   }

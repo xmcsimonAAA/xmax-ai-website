@@ -39,32 +39,62 @@
     "heroSlides": {
       "type": "component",
       "repeatable": true,
-      "component": "home.hero-slide"
+      "component": "home.hero-slide",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "navCards": {
       "type": "component",
       "repeatable": true,
-      "component": "home.nav-card"
+      "component": "home.nav-card",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "stats": {
       "type": "component",
       "repeatable": true,
-      "component": "home.stat-item"
+      "component": "home.stat-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "recentUpdates": {
       "type": "component",
       "repeatable": true,
-      "component": "home.update-item"
+      "component": "home.update-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "ctaPrimaryButton": {
       "type": "component",
       "repeatable": false,
-      "component": "home.cta-button"
+      "component": "home.cta-button",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "ctaSecondaryButton": {
       "type": "component",
       "repeatable": false,
-      "component": "home.cta-button"
+      "component": "home.cta-button",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

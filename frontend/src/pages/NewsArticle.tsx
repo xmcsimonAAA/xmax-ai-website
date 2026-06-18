@@ -21,6 +21,20 @@ export default function NewsArticle() {
   const corporateNewsLabel = lang === "zh" ? "公司新闻" : "Corporate News";
   const minuteReadLabel = lang === "zh" ? "分钟阅读" : "min read";
   const relatedLabel = lang === "zh" ? "相关" : "Related";
+  const leadParagraph = lang === "zh"
+    ? `XMAX AI Inc 很高兴分享这一重要进展。这是我们持续建设可信、可扩展的全球 AI 推理服务基础设施过程中的又一个里程碑。${article?.title || ""}。`
+    : `XMAX AI Inc is pleased to announce a significant milestone in our ongoing commitment to building trusted, scalable AI inference infrastructure across global markets. ${article?.title || ""}.`;
+  const bodyParagraphs = lang === "zh"
+    ? [
+        "这一进展标志着 XMAX AI Inc 在全球 AI 推理服务基础设施建设上的持续推进，也进一步连接电商、互娱、供应链服务、太空计算、机器人、生命科学、金融、安全与企业服务等九大业务板块。",
+        "基于 AWS 全球基础设施，我们的 AI 推理平台整合分布式计算、模型网关、智能体运行层、数据检索与安全治理能力，为合作伙伴和客户提供企业级 AI 服务能力。",
+        "我们将继续以连接产业创新与社会需求为使命，让可访问、可扩展、可治理的 AI 基础设施服务更多行业场景。",
+      ]
+    : [
+        "This update marks an important step forward for XMAX AI Inc as we continue to expand our presence across the nine business segments, including e-commerce, interactive entertainment, supply chain services, space computing, robotics, life sciences, finance, security, and enterprise services.",
+        "Built on AWS global infrastructure, our AI inference platform leverages distributed computing, model gateway, agent runtime, data retrieval, and security governance layers to deliver enterprise-grade capabilities to partners and customers worldwide.",
+        "We remain committed to our mission of connecting industrial innovation with societal needs through accessible, scalable AI infrastructure. Stay tuned for more updates as we continue to build the future of AI inference services.",
+      ];
 
   // Extract article id from URL hash: #/news/123 → 123
   const rawId = typeof window !== "undefined"
@@ -29,7 +43,12 @@ export default function NewsArticle() {
   const articleId = parseInt(rawId, 10);
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setArticle(null);
+    setAllUpdates([]);
     fetchHomePage(toStrapiLocale(lang)).then((data: HomePageData | null) => {
+      if (!active) return;
       if (!data) { setLoading(false); return; }
       const items = data.recentUpdates || [];
       setAllUpdates(items);
@@ -38,6 +57,7 @@ export default function NewsArticle() {
       setArticle(found);
       setLoading(false);
     });
+    return () => { active = false; };
   }, [lang, articleId, rawId]);
 
   if (loading) {
@@ -147,29 +167,13 @@ export default function NewsArticle() {
             </div>
 
             {/* Lead paragraph */}
-            <p className="text-xl leading-relaxed text-slate-300">
-              XMAX AI Inc is pleased to announce a significant milestone in our ongoing commitment to building
-              trusted, scalable AI inference infrastructure across global markets. {article.title}.
-            </p>
+            <p className="text-xl leading-relaxed text-slate-300">{leadParagraph}</p>
 
             {/* Body placeholder — structure for future CMS content */}
             <div className="mt-12 space-y-8 text-base leading-relaxed text-slate-300">
-              <p>
-                This update marks an important step forward for XMAX AI Inc as we continue to expand
-                our presence across the {lang === "zh" ? "9 大业务板块" : "nine business segments"},
-                including e-commerce, interactive entertainment, supply chain services, space computing,
-                robotics, life sciences, finance, security, and enterprise services.
-              </p>
-              <p>
-                Built on AWS global infrastructure, our AI inference platform leverages distributed
-                computing, model gateway, agent runtime, data retrieval, and security governance layers
-                to deliver enterprise-grade capabilities to partners and customers worldwide.
-              </p>
-              <p>
-                We remain committed to our mission of connecting industrial innovation with societal
-                needs through accessible, scalable AI infrastructure. Stay tuned for more updates
-                as we continue to build the future of AI inference services.
-              </p>
+              {bodyParagraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </div>
 
             {/* Footer divider */}

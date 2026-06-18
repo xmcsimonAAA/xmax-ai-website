@@ -39,12 +39,14 @@ export default function LegalPage({ type }: Props) {
   const isEn = lang === "en";
 
   useEffect(() => {
+    let active = true;
     setLoading(true);
     setTitle("");
     setContent("");
     const locale = toStrapiLocale(lang);
     const fetcher = type === "privacy" ? fetchPrivacyPage : fetchTermsPage;
     fetcher(locale).then((data: LegalPageData | null) => {
+      if (!active) return;
       if (data) {
         const fallbackTitle = FALLBACK_TITLE[type][isEn ? "en" : "zh"];
         const fallbackContent = FALLBACK_CONTENT[type][isEn ? "en" : "zh"];
@@ -56,6 +58,7 @@ export default function LegalPage({ type }: Props) {
       }
       setLoading(false);
     });
+    return () => { active = false; };
   }, [lang, type, isEn]);
 
   const paragraphs = content.split("\n\n").filter(Boolean);

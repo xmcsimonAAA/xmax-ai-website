@@ -47,12 +47,22 @@
     "navItems": {
       "type": "component",
       "repeatable": true,
-      "component": "site.nav-item"
+      "component": "site.nav-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "footerLinkGroups": {
       "type": "component",
       "repeatable": true,
-      "component": "site.footer-link-group"
+      "component": "site.footer-link-group",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

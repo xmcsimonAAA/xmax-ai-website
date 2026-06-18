@@ -23,7 +23,7 @@ export const common: TranslationMap = {
 // ─── 首页 ──────────────────────────────────────────────
 export const home: TranslationMap = {
   heroTag:          { zh: "XMAX GROUP SYSTEM", en: "XMAX GROUP SYSTEM" },
-  missionLabel:     { zh: "Our Mission", en: "Our Mission" },
+  missionLabel:     { zh: "使命", en: "Our Mission" },
   missionHeading:   { zh: "以可信、可扩展的 AI 推理服务基础设施，连接产业创新与社会需求", en: "Connecting industrial innovation and social needs through trusted, scalable AI inference infrastructure" },
   missionParagraph: { zh: "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。", en: "XMAX AI Inc is the AI capability platform and industry service carrier of XMAX Group, unifying platform capabilities, product output, and industry-specific deployment." },
   viewBusiness:     { zh: "查看业务版图", en: "Explore Business" },
@@ -35,7 +35,7 @@ export const home: TranslationMap = {
 
 // ─── 关于页 ────────────────────────────────────────────
 export const about: TranslationMap = {
-  headerLabel:       { zh: "About Us", en: "About Us" },
+  headerLabel:       { zh: "关于我们", en: "About Us" },
   headerHeading:     { zh: "关于我们", en: "About XMAX AI" },
   headerParagraph:   { zh: "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，围绕全球 AI 推理服务基础设施，构建面向全社会的产业级 AI 能力平台，并通过 9 大业务板块进行行业化落地。", en: "XMAX AI Inc is the AI capability platform and industry service carrier of XMAX Group, building industry-grade AI capabilities for society through global AI inference infrastructure and 9 business units." },
   narrativeLabel:    { zh: "Our Narrative", en: "Our Narrative" },
@@ -74,7 +74,7 @@ export const products: TranslationMap = {
 
 // ─── 业务页 ────────────────────────────────────────────
 export const business: TranslationMap = {
-  headerLabel:       { zh: "Business Units", en: "Business Units" },
+  headerLabel:       { zh: "业务板块", en: "Business Units" },
   headerHeading:     { zh: "9 大业务板块", en: "9 Business Units" },
   headerParagraph:   { zh: "平台能力通过 9 个明确业务板块形成行业化落地网络。每个板块都与统一 AI 基础设施连接，并承担不同产业场景中的服务角色。", en: "Platform capabilities are deployed through 9 distinct business units. Each unit connects to unified AI infrastructure and serves a different industry scenario." },
   coreCapabilities:  { zh: "核心能力", en: "Core Capabilities" },
@@ -97,7 +97,7 @@ export const aws: TranslationMap = {
 
 // ─── 联系页 ────────────────────────────────────────────
 export const contact: TranslationMap = {
-  headerLabel:       { zh: "Contact Us", en: "Contact Us" },
+  headerLabel:       { zh: "联系我们", en: "Contact Us" },
   headerHeading:     { zh: "联系我们", en: "Get in Touch" },
   headerParagraph:   { zh: "无论是商务合作、AWS 生态对接、投资咨询还是人才合作，我们都期待与您连接。", en: "Whether it's business collaboration, AWS ecosystem integration, investment inquiries, or talent opportunities, we look forward to connecting with you." },
   ctaHeading:        { zh: "让官网成为商务合作与集团介绍的统一入口", en: "Your Gateway to Business Collaboration & Corporate Overview" },

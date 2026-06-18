@@ -16,13 +16,18 @@ export default function News() {
   const { lang } = useLang();
 
   useEffect(() => {
+    let active = true;
+    setUpdates([]);
+    setHeaderImage(null);
     fetchHomePage(toStrapiLocale(lang)).then((data: HomePageData | null) => {
+      if (!active) return;
       if (!data) return;
       if (data.recentUpdates?.length) setUpdates(data.recentUpdates);
       if (data.heroSlides?.[0]?.image) {
         setHeaderImage(mediaUrl(data.heroSlides[0].image, "large") || mediaUrl(data.heroSlides[0].image));
       }
     });
+    return () => { active = false; };
   }, [lang]);
 
   return (
@@ -94,7 +99,7 @@ export default function News() {
                     {updates[0].title}
                   </h2>
                   <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white/60 transition-colors group-hover:text-white">
-                    Read Article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    {lang === "zh" ? "阅读全文" : "Read Article"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
               </div>
@@ -144,7 +149,7 @@ export default function News() {
                       {item.title}
                     </h3>
                     <div className="mt-4 flex items-center gap-1.5 text-sm text-white/40 transition-colors group-hover:text-white/70">
-                      Read more <ArrowRight className="h-3.5 w-3.5" />
+                      {lang === "zh" ? "阅读更多" : "Read more"} <ArrowRight className="h-3.5 w-3.5" />
                     </div>
                   </div>
                 </motion.a>

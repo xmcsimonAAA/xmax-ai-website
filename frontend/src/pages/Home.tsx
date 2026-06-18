@@ -93,14 +93,20 @@ function AnimatedCounter({ value, className }: { value: string; className?: stri
 export default function Home() {
   const [data, setData] = useState<HomePageData | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
-    console.log("[Home] Fetching with lang:", lang, "-> locale:", toStrapiLocale(lang));
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeroIndex(0);
     fetchHomePage(toStrapiLocale(lang)).then((d) => {
-      console.log("[Home] Received data:", d ? "OK" : "NULL", "missionHeading:", d?.missionHeading);
+      if (!active) return;
       setData(d);
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
 
   const heroSlides = data?.heroSlides ?? [];
@@ -116,6 +122,14 @@ export default function Home() {
     }, 6000);
     return () => clearInterval(timer);
   }, [heroSlides.length, heroIndex]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   return (
     <>

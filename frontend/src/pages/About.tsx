@@ -22,54 +22,95 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function About() {
   const [data, setData] = useState<AboutPageData | null>(null);
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
     fetchAboutPage(toStrapiLocale(lang)).then((d) => {
-      console.log("[About] fetched data:", d ? "OK" : "NULL", "headerImage:", d?.headerImage?.url || "none");
+      if (!active) return;
       setData(d);
       if (d?.headerImage) {
-        const url = mediaUrl(d.headerImage);
-        console.log("[About] headerImage URL:", url);
-        setHeaderImage(url);
+        setHeaderImage(mediaUrl(d.headerImage));
       }
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   const headerLabel = data?.headerLabel || t(A, "headerLabel", lang);
   const headerHeading = data?.headerHeading || t(A, "headerHeading", lang);
   const headerParagraph = data?.headerParagraph || t(A, "headerParagraph", lang);
 
-  const values: ValueItem[] = data?.values?.length ? data.values : [
-    { id: 1, icon: "Globe2", title: "集团定位", description: "XMAX AI Inc 是 XMAX 集团 AI 能力与产业服务的重要承载主体，统一推进平台能力、产品化输出与行业化落地。" },
-    { id: 2, icon: "Sparkles", title: "使命", description: "以可信、可扩展的 AI 推理服务基础设施连接产业创新与社会需求。" },
-    { id: 3, icon: "Users", title: "服务对象", description: "客户、合作伙伴、AWS 生态团队、投资机构与全球化人才。" },
-  ];
+  const fallbackValues: ValueItem[] = lang === "zh"
+    ? [
+        { id: 1, icon: "Globe2", title: "集团定位", description: "XMAX AI Inc 是 XMAX 集团 AI 能力与产业服务的重要承载主体，统一推进平台能力、产品化输出与行业化落地。" },
+        { id: 2, icon: "Sparkles", title: "使命", description: "以可信、可扩展的 AI 推理服务基础设施连接产业创新与社会需求。" },
+        { id: 3, icon: "Users", title: "服务对象", description: "客户、合作伙伴、AWS 生态团队、投资机构与全球化人才。" },
+      ]
+    : [
+        { id: 1, icon: "Globe2", title: "Group Positioning", description: "XMAX AI Inc carries XMAX Group's AI capabilities and industry services, advancing platform capabilities, productized output, and industry implementation." },
+        { id: 2, icon: "Sparkles", title: "Mission", description: "To connect industrial innovation and social demand through trustworthy, scalable AI inference service infrastructure." },
+        { id: 3, icon: "Users", title: "Audiences", description: "Customers, partners, AWS ecosystem teams, investors, and global talent." },
+      ];
+  const values: ValueItem[] = data?.values?.length ? data.values : fallbackValues;
 
   const highlights: string[] = data?.highlights?.length
     ? data.highlights.map((h) => h.content)
-    : [
-        "强调平台、能力、治理与生态，而不是单一 AI 工具或单点产品",
-        "强调 inference、orchestration、scale、latency、availability 与 security",
-        "强调 9 大业务板块带来的产业化落地与集团业务协同能力",
-        "基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力",
-        "支持跨区域部署、低时延响应与高可用运行及多行业场景复制",
-      ];
+    : lang === "zh"
+      ? [
+          "强调平台、能力、治理与生态，而不是单一 AI 工具或单点产品",
+          "强调 inference、orchestration、scale、latency、availability 与 security",
+          "强调 9 大业务板块带来的产业化落地与集团业务协同能力",
+          "基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力",
+          "支持跨区域部署、低时延响应与高可用运行及多行业场景复制",
+        ]
+      : [
+          "Focused on platform capabilities, governance, and ecosystem value rather than a single AI tool.",
+          "Built around inference, orchestration, scale, latency, availability, and security.",
+          "Connected to nine business units for industry implementation and group-level synergy.",
+          "Designed on AWS global infrastructure for scalable AI inference services.",
+          "Supports cross-region deployment, low-latency response, high availability, and repeatable industry scenarios.",
+        ];
 
   const subsidiaries: [string, string][] = data?.subsidiaries?.length
     ? data.subsidiaries.map((s) => [s.business, s.legalName])
-    : [
-        ["管理运营平台", "ElonX AI Holdings Pte. Ltd."],
-        ["电商", "ElonX Synapse Pte. Ltd."],
-        ["互娱", "ElonX IG Pte. Ltd."],
-        ["供应链服务", "ElonX Flow Pte. Ltd."],
-        ["太空计算", "ElonX Space Pte. Ltd."],
-        ["机器人", "ElonX Kinetics Pte. Ltd."],
-        ["生命科学", "ElonX Core Pte. Ltd."],
-        ["金融", "ElonX Trust Pte. Ltd."],
-        ["安全", "ElonX Shield Pte. Ltd."],
-        ["企业服务", "ElonX Catalyst Pte. Ltd."],
-      ];
+    : lang === "zh"
+      ? [
+          ["管理运营平台", "ElonX AI Holdings Pte. Ltd."],
+          ["电商", "ElonX Synapse Pte. Ltd."],
+          ["互娱", "ElonX IG Pte. Ltd."],
+          ["供应链服务", "ElonX Flow Pte. Ltd."],
+          ["太空计算", "ElonX Space Pte. Ltd."],
+          ["机器人", "ElonX Kinetics Pte. Ltd."],
+          ["生命科学", "ElonX Core Pte. Ltd."],
+          ["金融", "ElonX Trust Pte. Ltd."],
+          ["安全", "ElonX Shield Pte. Ltd."],
+          ["企业服务", "ElonX Catalyst Pte. Ltd."],
+        ]
+      : [
+          ["Management Platform", "ElonX AI Holdings Pte. Ltd."],
+          ["E-commerce", "ElonX Synapse Pte. Ltd."],
+          ["Interactive Entertainment", "ElonX IG Pte. Ltd."],
+          ["Supply Chain Services", "ElonX Flow Pte. Ltd."],
+          ["Space Computing", "ElonX Space Pte. Ltd."],
+          ["Robotics", "ElonX Kinetics Pte. Ltd."],
+          ["Life Sciences", "ElonX Core Pte. Ltd."],
+          ["Finance", "ElonX Trust Pte. Ltd."],
+          ["Security", "ElonX Shield Pte. Ltd."],
+          ["Enterprise Services", "ElonX Catalyst Pte. Ltd."],
+        ];
 
   const narrativeLabel = data?.narrativeLabel || t(A, "narrativeLabel", lang);
   const narrativeHeading = data?.narrativeHeading || t(A, "narrativeHeading", lang);

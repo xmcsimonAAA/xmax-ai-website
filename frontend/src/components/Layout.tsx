@@ -225,7 +225,12 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
   const t = T[lang] || T["zh"];
 
   useEffect(() => {
-    fetchSiteSetting(toStrapiLocale(lang)).then(setSiteData);
+    let active = true;
+    setSiteData(null);
+    fetchSiteSetting(toStrapiLocale(lang)).then((data) => {
+      if (active) setSiteData(data);
+    });
+    return () => { active = false; };
   }, [lang]);
 
   /* Lock body scroll when mobile menu is open */
@@ -402,7 +407,9 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
                 flexShrink: 0,
               }}
             >
-              <span className="text-sm font-semibold tracking-wider text-white uppercase">Menu</span>
+              <span className="text-sm font-semibold tracking-wider text-white uppercase">
+                {lang === "zh" ? "菜单" : "Menu"}
+              </span>
               <button
                 type="button"
                 onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
@@ -506,7 +513,9 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
 
             {/* Language Switcher */}
             <div style={{ padding: "16px 20px", borderTop: "1px solid #1e293b", flexShrink: 0 }}>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">Language</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">
+                {lang === "zh" ? "语言" : "Language"}
+              </p>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -666,6 +675,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem("xmax-lang", lang);
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
   }, [lang]);
 
   return (

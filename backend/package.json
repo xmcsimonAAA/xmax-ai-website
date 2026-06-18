@@ -4,9 +4,20 @@
   "description": "XMAX AI Inc 官网内容管理后台",
   "scripts": {
     "develop": "strapi develop",
+    "predevelop": "node scripts/patch-strapi-content-manager-locale.js",
     "start": "strapi start",
+    "prestart": "node scripts/patch-strapi-content-manager-locale.js",
     "build": "strapi build",
-    "strapi": "strapi"
+    "prebuild": "node scripts/patch-strapi-content-manager-locale.js",
+    "strapi": "strapi",
+    "postinstall": "node scripts/patch-strapi-content-manager-locale.js",
+    "repair:schema-cache": "node scripts/repair-component-schema-cache.js",
+    "sync:locales": "node scripts/sync-locales.js",
+    "repair:en-content": "node scripts/repair-en-content.js",
+    "repair:business-sections": "node scripts/repair-business-sections.js",
+    "repair:business-media": "node scripts/repair-business-media-links.js",
+    "repair:default-locale": "node scripts/repair-default-locale.js",
+    "repair:current-locales": "node scripts/repair-current-locales.js"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "^5.46.0",

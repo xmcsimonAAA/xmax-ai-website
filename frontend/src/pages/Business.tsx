@@ -30,6 +30,18 @@ const fallbackItems: BusinessItem[] = [
   { id: "09", title: "企业服务", alias: "XMax AI Enterprise Services Pte. Ltd.", subtitle: "面向组织数字化、知识管理与流程智能化提供能力。", description: "XMAX AI 企业服务板块聚焦组织内部知识、流程、协作与管理效率提升，通过智能体、知识引擎与自动化能力推动企业运营升级。该板块面向中后台系统与企业日常经营场景，强调标准化、可复制与可持续扩展。", tags: ["企业知识管理", "流程自动化", "组织协作智能化", "智能办公助手", "经营分析支持"], scenes: ["企业知识库与问答系统", "内部审批、运营与协作流程自动化", "员工助手、管理驾驶舱与智能分析支持"], infraRelation: "企业服务板块高度复用 XMAX AI 的智能体运行层、知识引擎与模型网关能力，是平台型能力最直接的企业化输出场景之一。", imageUrl: null },
 ];
 
+const fallbackItemsEn: BusinessItem[] = [
+  { id: "01", title: "E-commerce", alias: "XMax AI EC Pte. Ltd.", subtitle: "Build AI-driven systems for transactions, operations, and user growth.", description: "XMAX AI's e-commerce unit focuses on transaction efficiency, user operations, and intelligent platform operations, bringing AI inference into product, content, traffic, conversion, and service workflows.", tags: ["Smart recommendation", "Product content generation", "User growth", "AI customer service", "Conversion optimization"], scenes: ["Product titles, selling points, detail pages, and marketing materials", "User segmentation, personalized recommendation, and conversion paths", "AI customer service, after-sales assistance, and merchant analytics"], infraRelation: "The e-commerce unit uses XMAX AI's unified inference services, model governance, and knowledge retrieval capabilities to support real-time AI services for high-concurrency transaction scenarios.", imageUrl: null },
+  { id: "02", title: "Interactive Entertainment", alias: "XMax AI IG Pte. Ltd.", subtitle: "Build content generation, interactive experience, and digital entertainment capabilities.", description: "XMAX AI's interactive entertainment unit builds AI capabilities for creation, distribution, interaction, and operations across digital content and new entertainment scenarios.", tags: ["AIGC", "Interaction engine", "Digital characters", "Real-time response", "Content analytics"], scenes: ["Game and interactive content generation", "Digital-character dialogue and companion interaction", "User-behavior analysis and content operations"], infraRelation: "This unit relies on XMAX AI's low-latency inference and agent runtime to support stable responses and multimodal content generation in highly interactive scenarios.", imageUrl: null },
+  { id: "03", title: "Supply Chain Services", alias: "XMax AI SCM Pte. Ltd.", subtitle: "Build intelligent scheduling, forecasting, and collaboration networks.", description: "XMAX AI's supply chain services unit focuses on demand forecasting, inventory collaboration, transport scheduling, fulfillment optimization, and cross-party operational efficiency.", tags: ["Demand forecasting", "Smart scheduling", "Inventory optimization", "Fulfillment collaboration", "Decision support"], scenes: ["Order and demand forecasting", "Route scheduling and warehousing collaboration", "Exception monitoring and supply-chain risk alerts"], infraRelation: "This unit reuses XMAX AI's data retrieval layer, real-time inference, and workflow orchestration capabilities to support cross-system and cross-role process collaboration.", imageUrl: null },
+  { id: "04", title: "Space Computing", alias: "XMax AI SEIC Pte. Ltd.", subtitle: "Explore high-performance computing, edge connectivity, and future computing scenarios.", description: "XMAX AI's space computing unit explores future computing infrastructure, edge connectivity, long-distance data collaboration, and high-performance computing needs.", tags: ["High-performance computing", "Edge inference", "Remote collaboration", "Future infrastructure", "Frontier scenarios"], scenes: ["High-performance computing task scheduling", "Low-latency AI response in edge environments", "Distributed data processing and decision support"], infraRelation: "This unit extends XMAX AI's capabilities in global infrastructure, elastic inference, and distributed collaboration into future AI infrastructure scenarios.", imageUrl: null },
+  { id: "05", title: "Robotics", alias: "XMax AI Robotics Pte. Ltd.", subtitle: "Advance integrated systems for perception, decision-making, and execution.", description: "XMAX AI's robotics unit builds an evolving intelligence base for perception, understanding, reasoning, planning, and execution in robotic systems.", tags: ["Environment perception", "Intelligent decisions", "Task planning", "Execution control", "Human-machine collaboration"], scenes: ["Service robots and scenario task execution", "Assisted automation in industrial or semi-industrial environments", "Perception and path-planning support for complex environments"], infraRelation: "This unit uses XMAX AI's inference services, agent runtime, and low-latency response capabilities to support the perception-decision-execution loop.", imageUrl: null },
+  { id: "06", title: "Life Sciences", alias: "XMax AI Novalife Pte. Ltd.", subtitle: "Support R&D, analysis, and intelligent decision assistance.", description: "XMAX AI's life sciences unit introduces AI capabilities into knowledge-intensive research, data analysis, and intelligent decision-support scenarios.", tags: ["Research assistance", "Knowledge retrieval", "Data understanding", "Decision support", "Process optimization"], scenes: ["Research materials and literature analysis", "Complex data understanding and knowledge extraction", "Decision assistance in R&D workflows"], infraRelation: "This unit primarily reuses XMAX AI's knowledge engine, retrieval-augmented capabilities, and governable model services for high-knowledge-density scenarios.", imageUrl: null },
+  { id: "07", title: "Finance", alias: "XMax AI Fintech Pte. Ltd.", subtitle: "Provide capabilities for risk control, operations, service, and intelligent financial workflows.", description: "XMAX AI's finance unit builds product capabilities around risk control, customer service, operational workflows, intelligent assistance, and digital financial experience.", tags: ["Risk detection", "AI customer service", "Process automation", "Operations assistance", "Audit and governance"], scenes: ["Risk alerts and decision assistance", "Intelligent financial customer service", "Internal process automation and operational collaboration"], infraRelation: "This unit is built on XMAX AI's security governance layer, unified inference layer, and audit capabilities, emphasizing reliability, traceability, and service continuity.", imageUrl: null },
+  { id: "08", title: "Security", alias: "XMax AI Security Pte. Ltd.", subtitle: "Provide capabilities for digital security, monitoring, audit, and governance.", description: "XMAX AI's security unit focuses on monitoring, alerting, response, audit, and governance in digital environments through AI inference combined with policy control.", tags: ["Security monitoring", "Risk alerts", "Audit trail", "Governance policy", "Response assistance"], scenes: ["Security-event monitoring and risk detection", "Audit and log analysis", "Assisted assessment and response in security operations"], infraRelation: "This unit extends XMAX AI's security governance layer and benefits directly from unified access control, log audit, policy management, and inference guardrails.", imageUrl: null },
+  { id: "09", title: "Enterprise Services", alias: "XMax AI Enterprise Services Pte. Ltd.", subtitle: "Provide capabilities for organizational digitization, knowledge management, and workflow intelligence.", description: "XMAX AI's enterprise services unit improves internal knowledge, process, collaboration, and management efficiency through agents, knowledge engines, and automation.", tags: ["Enterprise knowledge", "Workflow automation", "Collaboration intelligence", "AI office assistant", "Business analytics"], scenes: ["Enterprise knowledge bases and Q&A systems", "Internal approval, operations, and collaboration automation", "Employee assistants, management dashboards, and intelligent analytics"], infraRelation: "This unit heavily reuses XMAX AI's agent runtime, knowledge engine, and model gateway capabilities as a direct enterprise output of the platform.", imageUrl: null },
+];
+
 function mapBusinessUnit(unit: BusinessUnit, index: number): BusinessItem {
   return {
     id: String(index + 1).padStart(2, "0"),
@@ -54,6 +66,7 @@ export default function Business() {
   const { lang } = useLang();
 
   useEffect(() => {
+    let active = true;
     setLoading(true);
     setHeaderLabel(null);
     setHeaderHeading(null);
@@ -61,11 +74,12 @@ export default function Business() {
     setItems([]);
     setHeaderImage(null);
     fetchBusinessPage(toStrapiLocale(lang)).then((data: BusinessPageData | null) => {
+      if (!active) return;
       if (!data) {
         setHeaderLabel(lang === "zh" ? "业务板块" : "Business Units");
         setHeaderHeading(t(B, "headerHeading", lang));
         setHeaderParagraph(t(B, "headerParagraph", lang));
-        setItems(lang === "zh" ? fallbackItems : []);
+        setItems(lang === "zh" ? fallbackItems : fallbackItemsEn);
         setLoading(false);
         return;
       }
@@ -78,6 +92,7 @@ export default function Business() {
       if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
       setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
 
   if (loading || !headerLabel || !headerHeading || !headerParagraph) {

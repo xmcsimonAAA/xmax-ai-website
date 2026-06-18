@@ -67,7 +67,12 @@
     "contactPoints": {
       "type": "component",
       "repeatable": true,
-      "component": "contact.point"
+      "component": "contact.point",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

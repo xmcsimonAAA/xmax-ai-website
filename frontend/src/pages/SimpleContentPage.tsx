@@ -27,12 +27,16 @@ export default function SimpleContentPage({ type }: { type: SimplePageType }) {
   const fallback = FALLBACK[type][lang];
 
   useEffect(() => {
+    let active = true;
     setLoading(true);
+    setData(null);
     const fetcher = type === "enterprise-service" ? fetchEnterpriseServicePage : fetchSecurityGovernancePage;
     fetcher(toStrapiLocale(lang)).then((value) => {
+      if (!active) return;
       setData(value);
       setLoading(false);
     });
+    return () => { active = false; };
   }, [lang, type]);
 
   const title = data?.title || fallback.title;

@@ -59,22 +59,42 @@
     "narrativePoints": {
       "type": "component",
       "repeatable": true,
-      "component": "aws.narrative-point"
+      "component": "aws.narrative-point",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "awsStats": {
       "type": "component",
       "repeatable": true,
-      "component": "aws.stat-item"
+      "component": "aws.stat-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "coreMessages": {
       "type": "component",
       "repeatable": true,
-      "component": "aws.core-message"
+      "component": "aws.core-message",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "capabilityMappings": {
       "type": "component",
       "repeatable": true,
-      "component": "aws.capability-mapping"
+      "component": "aws.capability-mapping",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

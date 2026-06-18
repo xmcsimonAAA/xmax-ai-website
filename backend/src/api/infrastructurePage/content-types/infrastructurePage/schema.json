@@ -67,7 +67,12 @@
     "layers": {
       "type": "component",
       "repeatable": true,
-      "component": "infra.layer"
+      "component": "infra.layer",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

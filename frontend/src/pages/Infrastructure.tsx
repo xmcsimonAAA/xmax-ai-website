@@ -21,15 +21,30 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function Infrastructure() {
   const [data, setData] = useState<InfrastructurePageData | null>(null);
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
     fetchInfrastructurePage(toStrapiLocale(lang)).then((d) => {
-      console.log("[Infra] locale=", toStrapiLocale(lang), "data=", d);
+      if (!active) return;
       setData(d);
       if (d?.headerImage) setHeaderImage(mediaUrl(d.headerImage));
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   const headerLabel = data?.headerLabel || t(I, "headerLabel", lang);
   const headerHeading = data?.headerHeading || t(I, "headerHeading", lang);
@@ -37,13 +52,21 @@ export default function Infrastructure() {
 
   const layers: InfraLayer[] = data?.layers?.length
     ? data.layers
-    : [
-        { id: 1, title: "Inference Fabric", subtitle: "推理底座", icon: "Network", description: "统一承载大模型与行业模型推理调用，面向多业务场景提供弹性扩容与服务路由。", details: "面向多业务场景提供弹性扩容与服务路由\n统一承载大模型与行业模型的推理调用\n支持跨场景、跨区域、跨业务板块复用" },
-        { id: 2, title: "Model Gateway", subtitle: "模型网关", icon: "Layers3", description: "统一管理模型接入、版本、配额、策略与调用观测，形成模型治理中心。", details: "统一接入模型、版本、策略、配额与调用日志\n模型治理与版本控制\n策略编排与调用观测" },
-        { id: 3, title: "Agent Runtime", subtitle: "智能体运行层", icon: "Bot", description: "支撑工作流、工具调用、企业任务编排与行业智能体运行。", details: "支撑工作流、工具调用与企业任务编排\n行业智能体运行环境\n工具调用与任务编排能力" },
-        { id: 4, title: "Data & Retrieval", subtitle: "数据检索层", icon: "Database", description: "支撑知识库、行业数据与检索增强能力，连接企业知识与业务上下文。", details: "支撑企业知识库、行业数据、RAG 与检索增强\n连接企业知识与业务上下文\n检索增强与数据协同" },
-        { id: 5, title: "Security & Governance", subtitle: "安全治理层", icon: "Shield", description: "覆盖访问控制、审计、护栏策略与平台运营治理要求。", details: "访问控制、审计、内容安全与合规要求\n护栏策略与运营治理\n日志审计与策略管理" },
-      ];
+    : lang === "zh"
+      ? [
+          { id: 1, title: "Inference Fabric", subtitle: "推理底座", icon: "Network", description: "统一承载大模型与行业模型推理调用，面向多业务场景提供弹性扩容与服务路由。", details: "面向多业务场景提供弹性扩容与服务路由\n统一承载大模型与行业模型的推理调用\n支持跨场景、跨区域、跨业务板块复用" },
+          { id: 2, title: "Model Gateway", subtitle: "模型网关", icon: "Layers3", description: "统一管理模型接入、版本、配额、策略与调用观测，形成模型治理中心。", details: "统一接入模型、版本、策略、配额与调用日志\n模型治理与版本控制\n策略编排与调用观测" },
+          { id: 3, title: "Agent Runtime", subtitle: "智能体运行层", icon: "Bot", description: "支撑工作流、工具调用、企业任务编排与行业智能体运行。", details: "支撑工作流、工具调用与企业任务编排\n行业智能体运行环境\n工具调用与任务编排能力" },
+          { id: 4, title: "Data & Retrieval", subtitle: "数据检索层", icon: "Database", description: "支撑知识库、行业数据与检索增强能力，连接企业知识与业务上下文。", details: "支撑企业知识库、行业数据、RAG 与检索增强\n连接企业知识与业务上下文\n检索增强与数据协同" },
+          { id: 5, title: "Security & Governance", subtitle: "安全治理层", icon: "Shield", description: "覆盖访问控制、审计、护栏策略与平台运营治理要求。", details: "访问控制、审计、内容安全与合规要求\n护栏策略与运营治理\n日志审计与策略管理" },
+        ]
+      : [
+          { id: 1, title: "Inference Fabric", subtitle: "Inference Layer", icon: "Network", description: "A unified layer for large-model and industry-model inference, with elastic scaling and routing across business scenarios.", details: "Elastic scaling and service routing for multi-business scenarios\nUnified inference calls for large models and industry models\nReusable across scenarios, regions, and business units" },
+          { id: 2, title: "Model Gateway", subtitle: "Model Gateway", icon: "Layers3", description: "Centralized model access, versioning, quotas, policy control, and observability.", details: "Unified access for models, versions, policies, quotas, and logs\nModel governance and version control\nPolicy orchestration and call observability" },
+          { id: 3, title: "Agent Runtime", subtitle: "Agent Runtime", icon: "Bot", description: "Runtime support for workflows, tool calls, enterprise task orchestration, and industry agents.", details: "Workflow, tool-calling, and enterprise task orchestration\nRuntime environment for industry agents\nTool invocation and task orchestration capabilities" },
+          { id: 4, title: "Data & Retrieval", subtitle: "Data Retrieval Layer", icon: "Database", description: "Knowledge-base, industry-data, and retrieval-augmented capabilities connected to business context.", details: "Enterprise knowledge bases, industry data, RAG, and retrieval augmentation\nConnection between enterprise knowledge and business context\nRetrieval-augmented data collaboration" },
+          { id: 5, title: "Security & Governance", subtitle: "Security Governance Layer", icon: "Shield", description: "Access control, audit trails, guardrail policies, and platform governance.", details: "Access control, audit, content safety, and compliance requirements\nGuardrail policies and operational governance\nLog audit and policy management" },
+        ];
 
   const keyPrincipleHeading = data?.keyPrincipleHeading || t(I, "keyPrincipleHeading", lang);
   const keyPrincipleParagraph = data?.keyPrincipleParagraph || t(I, "keyPrincipleParagraph", lang);

@@ -22,23 +22,46 @@ export default function Contact() {
   const [data, setData] = useState<ContactPageData | null>(null);
   const { lang } = useLang();
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const isEn = lang === "en";
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
     fetchContactPage(toStrapiLocale(lang)).then((data) => {
-      if (!data) return;
-      setData(data);
-      if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      if (!active) return;
+      if (data) {
+        setData(data);
+        if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      }
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   const contactPoints = data?.contactPoints?.length
     ? data.contactPoints
-    : [
-        { id: 1, icon: "Mail", title: "商务合作", description: "合作伙伴、生态对接、商务咨询", value: "business@xmax.ai" },
-        { id: 2, icon: "Phone", title: "AWS 生态合作", description: "AWS 技术对接、联合方案探讨", value: "aws@xmax.ai" },
-        { id: 3, icon: "MapPin", title: "总部地址", description: "新加坡", value: "Singapore" },
-      ].map((p) => ({ ...p })) as ContactPageData["contactPoints"];
+    : (lang === "zh"
+      ? [
+          { id: 1, icon: "Mail", title: "商务合作", description: "合作伙伴、生态对接、商务咨询", value: "business@xmax.ai" },
+          { id: 2, icon: "Phone", title: "AWS 生态合作", description: "AWS 技术对接、联合方案探讨", value: "aws@xmax.ai" },
+          { id: 3, icon: "MapPin", title: "总部地址", description: "新加坡", value: "Singapore" },
+        ]
+      : [
+          { id: 1, icon: "Mail", title: "Business Partnerships", description: "Partners, ecosystem collaboration, and business inquiries", value: "business@xmax.ai" },
+          { id: 2, icon: "Phone", title: "AWS Ecosystem", description: "AWS technical alignment and joint solution discussions", value: "aws@xmax.ai" },
+          { id: 3, icon: "MapPin", title: "Headquarters", description: "Singapore", value: "Singapore" },
+        ]).map((p) => ({ ...p })) as ContactPageData["contactPoints"];
 
   return (
     <>

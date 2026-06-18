@@ -27,7 +27,13 @@ export default function BusinessUnitPage() {
   const unitIndex = parseInt(rawId, 10) - 1; // 01 → 0
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setAllUnits([]);
+    setCurrentUnit(null);
+    setHeaderImage(null);
     fetchBusinessPage(toStrapiLocale(lang)).then((data: BusinessPageData | null) => {
+      if (!active) return;
       if (!data) { setLoading(false); return; }
       const units = data.businessUnits || [];
       setAllUnits(units);
@@ -37,6 +43,7 @@ export default function BusinessUnitPage() {
       setCurrentUnit(current);
       setLoading(false);
     });
+    return () => { active = false; };
   }, [lang, unitIndex]);
 
   if (loading) {

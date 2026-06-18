@@ -18,65 +18,51 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function AWSPage() {
-  const [headerLabel, setHeaderLabel] = useState("AWS Infrastructure");
-  const [headerHeading, setHeaderHeading] = useState("AWS 基础设施");
-  const [headerParagraph, setHeaderParagraph] = useState(
-    "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。"
-  );
-  const [narrativePoints, setNarrativePoints] = useState([
-    { icon: "Cloud", title: "基于 AWS 全球基础设施布局全球服务能力", description: "" },
-    { icon: "Orbit", title: "面向跨区域访问、低时延响应和高可用部署进行架构设计", description: "" },
-    { icon: "Cpu", title: "通过云原生能力支持业务弹性增长和行业场景快速复制", description: "" },
-  ]);
-  const [awsStats, setAwsStats] = useState([
-    { value: "39", label: "Geographic Regions" },
-    { value: "123", label: "Availability Zones" },
-    { value: "750+", label: "CloudFront POPs" },
-  ]);
-  const [coreMessages, setCoreMessages] = useState([
-    "公司在 AWS 全球基础设施上建设 AI 服务能力",
-    "公司业务适合多区域部署、弹性扩容与低时延推理",
-    "公司在 AI 推理、模型服务、数据检索、安全治理方面形成平台能力",
-    "公司有多个垂直行业场景，具备与 AWS 联合拓展空间",
-  ]);
-  const [capabilityMappings, setCapabilityMappings] = useState([
-    { capability: "全球推理入口", description: "多 Region 部署、弹性计算、全球网络接入" },
-    { capability: "模型与推理服务", description: "Amazon Bedrock、Amazon SageMaker AI、EC2 推理实例" },
-    { capability: "高性能推理优化", description: "AWS Inferentia / Inferentia2、Neuron SDK" },
-    { capability: "数据与检索层", description: "对象存储、数据湖、检索与向量扩展能力" },
-    { capability: "安全治理层", description: "IAM、KMS、日志审计、网络隔离、策略管理" },
-    { capability: "全球分发与低时延", description: "CloudFront、边缘节点、Local Zones、Wavelength" },
-  ]);
+  const [data, setData] = useState<AwsPageData | null>(null);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
-  const [quoteChinese, setQuoteChinese] = useState(
-    lang === "en"
-      ? "XMAX AI Inc builds scalable AI inference capabilities on AWS global infrastructure, supporting cross-region deployment, low-latency response, high-availability operation, and multi-industry scenario replication."
-      : "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。"
-  );
   const [headerImage, setHeaderImage] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAwsPage(toStrapiLocale(lang)).then((data: AwsPageData | null) => {
-      if (!data) return;
-      if (data.headerLabel) setHeaderLabel(data.headerLabel);
-      if (data.headerHeading) setHeaderHeading(data.headerHeading);
-      if (data.headerParagraph) setHeaderParagraph(data.headerParagraph);
-      if (data.narrativePoints && data.narrativePoints.length > 0) {
-        setNarrativePoints(data.narrativePoints.map((p) => ({ icon: p.icon, title: p.title, description: p.description })));
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
+    fetchAwsPage(toStrapiLocale(lang)).then((pageData: AwsPageData | null) => {
+      if (!active) return;
+      if (pageData) {
+        setData(pageData);
+        if (pageData.headerImage) setHeaderImage(mediaUrl(pageData.headerImage));
       }
-      if (data.awsStats && data.awsStats.length > 0) {
-        setAwsStats(data.awsStats.map((s) => ({ value: s.value, label: s.label })));
-      }
-      if (data.coreMessages && data.coreMessages.length > 0) {
-        setCoreMessages(data.coreMessages.map((m) => m.content));
-      }
-      if (data.capabilityMappings && data.capabilityMappings.length > 0) {
-        setCapabilityMappings(data.capabilityMappings.map((m) => ({ capability: m.capability, description: m.description })));
-      }
-      if (data.quoteChinese) setQuoteChinese(data.quoteChinese);
-      if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
+
+  const headerLabel = data?.headerLabel || t(AW, "headerLabel", lang);
+  const headerHeading = data?.headerHeading || t(AW, "headerHeading", lang);
+  const headerParagraph = data?.headerParagraph || t(AW, "headerParagraph", lang);
+  const narrativePoints = data?.narrativePoints?.length
+    ? data.narrativePoints.map((point) => ({ icon: point.icon, title: point.title, description: point.description }))
+    : [];
+  const awsStats = data?.awsStats?.length
+    ? data.awsStats.map((stat) => ({ value: stat.value, label: stat.label }))
+    : [];
+  const coreMessages = data?.coreMessages?.length
+    ? data.coreMessages.map((message) => message.content)
+    : [];
+  const capabilityMappings = data?.capabilityMappings?.length
+    ? data.capabilityMappings.map((mapping) => ({ capability: mapping.capability, description: mapping.description }))
+    : [];
+  const quoteChinese = data?.quoteChinese || t(AW, "headerParagraph", lang);
 
   return (
     <>
@@ -127,7 +113,9 @@ export default function AWSPage() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <p className="section-label text-white">Infrastructure Narrative</p>
+              <p className="section-label text-white">
+                {lang === "zh" ? "基础设施叙事" : "Infrastructure Narrative"}
+              </p>
               <h2 className="mt-4 text-3xl heading-display text-white sm:text-4xl">
                 <TypewriterOnView text={t(AW, "narrativeSection", lang)} speed={0.065} showCursor={false} />
               </h2>
@@ -176,7 +164,9 @@ export default function AWSPage() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
             >
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">Core Messages</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">
+                {lang === "zh" ? "核心信息" : "Core Messages"}
+              </p>
               <ul className="space-y-4">
                 {coreMessages.map((msg, i) => (
                   <motion.li
@@ -206,7 +196,7 @@ export default function AWSPage() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4 }}
             className="section-label text-white"
-          >Capability Mapping</motion.p>
+          >{lang === "zh" ? "能力映射" : "Capability Mapping"}</motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}

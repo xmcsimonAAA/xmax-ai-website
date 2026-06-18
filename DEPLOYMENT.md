@@ -16,7 +16,7 @@ xmax-ai-website/
 
 ## 2. 环境要求
 
-- Node.js: 18.x 到 22.x
+- Node.js: 18.x 到 22.x，推荐 Node.js 20 LTS
 - npm: 随 Node.js 安装即可
 - 推荐系统: macOS / Linux / Windows Server 均可
 
@@ -25,6 +25,8 @@ xmax-ai-website/
 ```text
 node >=18.0.0 <=22.x.x
 ```
+
+不要使用 Node.js 24 或更新大版本运行 Strapi 后台。即使偶尔能启动，也可能出现后台管理页随机崩溃、依赖编译不稳定等问题。
 
 ## 3. 后端配置
 
@@ -191,10 +193,53 @@ npm run build
 
 用户手动切换中文或英文后，前端会记住用户选择。
 
-后台内容支持中文和英文。考虑到后续维护可能主要填写中文，项目内已加入两层兜底：
+后台内容支持中文和英文。当前版本已经改为“后台保存多语言内容，前端只读取当前语言内容”的机制：
 
-- 后端可使用 DeepL API 自动翻译内容，需要配置 `DEEPL_API_KEY`
-- 前端包含静态翻译兜底，避免英文页面出现大量中文混杂
+- 英文页面请求 Strapi 的 `locale=en`
+- 中文页面请求 Strapi 的 `locale=zh-Hans`
+- 前端不再在浏览器里临时翻译中文内容
+- 前端不再从另一个语言版本里跨语言补文字或补图片
+- 图片、URL、图标等非语言字段在后台同步时复制到目标语言；图片字段本身仍按 Strapi i18n 配置尽量保持非本地化共享
+
+这样做的目的是避免线上接口较慢时先显示中文/旧静态文案，再切换成英文文案的闪烁问题。
+
+### 8.1 自动翻译配置
+
+如果甲方后续主要在后台填写中文，并希望自动生成英文内容，后端必须配置 DeepL：
+
+```text
+DEEPL_API_KEY=your-deepl-api-key
+TRANSLATE_TARGET_LOCALES=zh-Hans,en
+```
+
+配置后，管理员在 Strapi 后台更新中文内容时，后端生命周期 hook 会自动生成或更新英文 locale。
+
+### 8.2 手动同步命令
+
+如果已经批量修改了中文内容，可以在后端目录执行：
+
+```bash
+cd backend
+npm run sync:locales -- --from zh-Hans --to en
+```
+
+如果没有 DeepL Key，开发环境可以临时使用内置静态词典：
+
+```bash
+cd backend
+npm run sync:locales -- --from zh-Hans --to en --static
+```
+
+注意：`--static` 只适合已在词典中覆盖的短句和少量固定文案，不适合正式翻译长篇法律文本、新闻稿或新增业务介绍。脚本已经加入保护：静态翻译后仍含中文的字段不会写入英文 locale。
+
+如果本地调试时误把中文写入英文 locale，可以执行一次：
+
+```bash
+cd backend
+npm run repair:en-content
+```
+
+该命令只用于修复当前项目内置的英文基础内容，不替代正式翻译。
 
 注意：Strapi 管理后台界面固定使用英文 Admin UI。这里指的是后台系统菜单、媒体库、Content Manager 等管理界面语言，不影响网站前台中英文内容。
 
@@ -210,6 +255,22 @@ sqlite3 backend/.tmp/data.db "UPDATE admin_users SET prefered_language='en';"
 
 ```bash
 cd backend
+npm run build
+npm run start
+```
+
+如果后台进入 About、Business 等内容编辑页时出现以下报错：
+
+```text
+components[props.attribute.component].layout
+Cannot read properties of undefined (reading 'sort')
+```
+
+通常是 Strapi 数据库里的后台 schema 缓存不完整。项目已在后端启动时自动检查并修复组件 schema 缓存；如果线上数据库已经出现该问题，也可以在后端目录手动执行一次：
+
+```bash
+cd backend
+npm run repair:schema-cache
 npm run build
 npm run start
 ```
