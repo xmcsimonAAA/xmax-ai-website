@@ -452,9 +452,9 @@ else:
 
 order = 1.0
 for icon, title, desc, value in [
-    ("Mail", "商务合作", "商务合作与生态对接", "business@xmaxai.com"),
-    ("Users", "人才加入", "加入 XMAX AI 团队", "careers@xmaxai.com"),
-    ("Globe", "全球办公室", "全球办公地点", "Singapore / Beijing / Shenzhen"),
+    ("Mail", "官方联系", "公司事务与商务合作咨询", "info@xmax.com"),
+    ("MapPin", "注册办公地址", "内华达州注册地址", "732 S 6TH ST, STE R Las Vegas, NV 89101"),
+    ("Phone", "公司电话", "美国公司电话", "+1(323)888-9999"),
 ]:
     insert_component("components_contact_points", ["icon", "title", "description", "value"],
                      [icon, title, desc, value], "contact_pages", contact_id, "contact.contact-point", "contactPoints", order)

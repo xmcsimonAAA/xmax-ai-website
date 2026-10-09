@@ -11,6 +11,7 @@ import { toStrapiLocale, type StrapiLocale } from "@/lib/cms";
 import { useLang } from "@/components/Layout";
 import { home as H, common as C, t } from "@/lib/i18n";
 import { TypewriterText, TypewriterOnView } from "@/hooks/useTypewriter";
+import { NEWS_ITEMS } from "@/content/remediation";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Building2,
@@ -93,21 +94,27 @@ function AnimatedCounter({ value, className }: { value: string; className?: stri
 export default function Home() {
   const [data, setData] = useState<HomePageData | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
-    console.log("[Home] Fetching with lang:", lang, "-> locale:", toStrapiLocale(lang));
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeroIndex(0);
     fetchHomePage(toStrapiLocale(lang)).then((d) => {
-      console.log("[Home] Received data:", d ? "OK" : "NULL", "missionHeading:", d?.missionHeading);
+      if (!active) return;
       setData(d);
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
 
   const heroSlides = data?.heroSlides ?? [];
   const currentSlide = heroSlides[heroIndex];
   const navCards = data?.navCards ?? [];
   const stats = data?.stats ?? [];
-  const recentUpdates = data?.recentUpdates ?? [];
+  const recentUpdates = NEWS_ITEMS.slice(0, 3);
 
   useEffect(() => {
     if (heroSlides.length <= 1) return;
@@ -116,6 +123,14 @@ export default function Home() {
     }, 6000);
     return () => clearInterval(timer);
   }, [heroSlides.length, heroIndex]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -352,7 +367,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="mx-auto max-w-7xl px-6 lg:px-8"
           >
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className={`grid grid-cols-2 gap-8 ${stats.length === 3 ? "md:grid-cols-3" : "md:grid-cols-4"}`}>
               {stats.map((stat, i) => (
                 <motion.div
                   key={stat.id}
@@ -393,22 +408,13 @@ export default function Home() {
               {recentUpdates.map((item, i) => (
                 <motion.a
                   key={item.id}
-                  href="#/news"
+                  href={`#/news/${item.id}`}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.5, delay: i * 0.12 }}
                   className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 transition-all hover:border-slate-600 hover:shadow-md block"
                 >
-                  {item.image && (
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={mediaUrl(item.image, "medium") || mediaUrl(item.image) || ""}
-                        alt={item.title}
-                        className="motion-image h-full w-full object-cover"
-                      />
-                    </div>
-                  )}
                   <div className="p-6">
                     <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-white">{item.tag}</span>
                     <p className="mt-3 text-xs text-slate-500">{item.date}</p>

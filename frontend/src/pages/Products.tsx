@@ -8,6 +8,7 @@ import { BrainCircuit, Cloud, Layers3, Shield, Workflow } from "lucide-react";
 import { fetchProductsPage, mediaUrl, toStrapiLocale, type ProductsPageData, type ProductItem } from "../lib/cms";
 import { useLang } from "@/components/Layout";
 import { products as P, t } from "@/lib/i18n";
+import { PRICING_MODELS, PRODUCTS } from "@/content/remediation";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Cloud,
@@ -20,28 +21,44 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function Products() {
   const [data, setData] = useState<ProductsPageData | null>(null);
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { lang } = useLang();
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
     fetchProductsPage(toStrapiLocale(lang)).then((d) => {
+      if (!active) return;
       setData(d);
       if (d?.headerImage) setHeaderImage(mediaUrl(d.headerImage));
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
 
   const headerLabel = data?.headerLabel || t(P, "headerLabel", lang);
   const headerHeading = data?.headerHeading || t(P, "headerHeading", lang);
   const headerParagraph = data?.headerParagraph || t(P, "headerParagraph", lang);
 
-  const products: ProductItem[] = data?.products?.length
-    ? data.products
-    : [
-        { id: 1, name: "XMAX Inference Grid", icon: "Cloud", description: "面向企业与业务系统的统一 AI 推理服务入口。", scene: "统一推理 / 多业务承载 / 弹性扩缩容", details: "统一承载大模型与行业模型推理调用\n面向多业务场景提供弹性扩容与服务路由\n面向企业与业务系统的统一 AI 推理服务入口", image: null },
-        { id: 2, name: "XMAX Model Gateway", icon: "Layers3", description: "模型接入、路由、配额、监控与治理平台。", scene: "模型治理 / 版本控制 / 策略编排", details: "统一接入模型、版本、策略、配额与调用日志\n模型接入、路由、配额、监控与治理\n版本控制与策略编排能力", image: null },
-        { id: 3, name: "XMAX Agent Studio", icon: "Workflow", description: "面向工作流、任务自动化和行业智能体构建。", scene: "智能体运行层 / 工具调用 / 任务编排", details: "支撑工作流、工具调用、企业任务编排\n行业智能体构建与运行\n任务自动化与工具调用能力", image: null },
-        { id: 4, name: "XMAX Knowledge Engine", icon: "BrainCircuit", description: "面向企业知识、检索增强和数据协同的智能引擎。", scene: "知识检索 / RAG / 数据协同", details: "支撑企业知识库、行业数据与检索增强\n面向企业知识与数据协同的智能引擎\n检索增强（RAG）与知识管理能力", image: null },
-        { id: 5, name: "XMAX Security Mesh", icon: "Shield", description: "面向安全审计、访问控制、护栏策略与运营治理。", scene: "安全治理 / 审计追踪 / 控制面", details: "覆盖访问控制、审计、护栏策略\n安全审计与访问控制平台\n护栏策略与运营治理能力", image: null },
-      ];
+  const products: ProductItem[] = PRODUCTS.map((product, index) => ({
+    id: index + 1,
+    name: product.name,
+    icon: product.icon,
+    description: product.description,
+    scene: product.scene,
+    details: product.details,
+    image: null,
+  }));
 
   return (
     <>
@@ -114,7 +131,7 @@ export default function Products() {
                           <Icon className="h-6 w-6" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">
-                          Product 0{index + 1}
+                          {lang === "zh" ? "产品" : "Product"} 0{index + 1}
                         </span>
                       </div>
                       <h3 className="mt-4 text-2xl font-semibold text-white">{product.name}</h3>
@@ -134,6 +151,24 @@ export default function Products() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-slate-800 bg-slate-950 py-20 lg:py-24">
+        <div className="mx-auto max-w-7xl px-8 lg:px-12">
+          <div className="max-w-3xl">
+            <p className="section-label text-slate-500">Commercial model</p>
+            <h2 className="mt-4 text-4xl text-white heading-display">A clear path from pilot to production.</h2>
+            <p className="mt-5 text-base leading-7 text-slate-400">Pricing is scoped to workload shape, capacity commitment, and support requirements. Final commercial terms are confirmed during enterprise review.</p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {PRICING_MODELS.map((model) => (
+              <div key={model.title} className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
+                <h3 className="text-lg font-semibold text-white">{model.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{model.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

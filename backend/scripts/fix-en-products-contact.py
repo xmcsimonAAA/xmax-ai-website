@@ -52,9 +52,9 @@ def main():
 
     # 创建英文 contact points
     contact_points_en = [
-        ("Mail", "Business Collaboration", "Partnerships, ecosystem integration, business inquiries", "business@xmax.ai"),
-        ("Phone", "AWS Ecosystem", "AWS technical integration, joint solution exploration", "aws@xmax.ai"),
-        ("MapPin", "Headquarters", "Singapore", "Singapore"),
+        ("Mail", "Official Contact", "General corporate and business inquiries", "info@xmax.com"),
+        ("MapPin", "Registered Office", "Nevada registered address", "732 S 6TH ST, STE R Las Vegas, NV 89101"),
+        ("Phone", "Corporate Phone", "U.S. business line", "+1(323)888-9999"),
     ]
 
     en_contact_ids = []

@@ -1,7 +1,7 @@
 const TRANS_MAP: Record<string, string> = {
-  "9 大业务板块": "9 Business Segments",
-  "9 大业务板块覆盖电商、互娱、金融、生命科学等行业": "Nine business segments covering e-commerce, entertainment, finance, life sciences, and more",
-  "9 大业务板块覆盖电商、互娱、金融、生命科学等领域": "Nine business segments covering e-commerce, entertainment, finance, life sciences, and more",
+  "9 大业务板块": "AI application areas",
+  "9 大业务板块覆盖电商、互娱、金融、生命科学等行业": "Illustrative AI workflows for commerce, research, and enterprise operations",
+  "9 大业务板块覆盖电商、互娱、金融、生命科学等领域": "Illustrative AI workflows across industry application areas",
   "AI 中台": "AI Middleware",
   "AI 产品与服务": "AI Products & Services",
   "AI 基础设施": "AI Infrastructure",
@@ -29,8 +29,9 @@ const TRANS_MAP: Record<string, string> = {
   "RAG": "RAG",
   "XMAX AI Agent OS 正式发布": "XMAX AI Agent OS Officially Launched",
   "XMAX AI Inc 依托 XMAX 集团体系，面向全球构建可扩展、可治理、可落地的 AI 推理服务平台": "Under the XMAX Group system, XMAX AI Inc builds scalable, governable, and deployable AI inference platforms for global markets.",
-  "XMAX AI Inc 依托 XMAX 集团，通过 9 大业务板块将可扩展、可治理的 AI 推理服务落地于商业与社会场景": "Leveraging the XMAX Group ecosystem, XMAX AI Inc deploys scalable and governable AI inference services across 9 business segments for commercial and societal applications.",
+  "XMAX AI Inc 依托 XMAX 集团，通过 9 大业务板块将可扩展、可治理的 AI 推理服务落地于商业与社会场景": "XMAX AI Inc explores proposed AI workflows for commercial and societal applications within the XMAX Group ecosystem.",
   "XMAX AI Inc 基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力，支持跨区域部署、低时延响应、高可用运行及多行业场景复制。": "XMAX AI Inc builds scalable AI inference service capabilities on AWS global infrastructure, supporting cross-region deployment, low-latency response, high-availability operation, and multi-industry scenario replication.",
+  "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。": "XMAX AI Inc is the AI platform and industrial service carrier of XMAX Group, advancing platform capabilities, productized output, and industry implementation.",
   "XMAX AI Inc 通过统一的 AI 基础设施，连接产业 AI 创新与现实世界应用": "XMAX AI Inc bridges industrial AI innovation with real-world deployment through unified infrastructure.",
   "XMAX AI 与 AWS 深化全球合作伙伴关系": "XMAX AI & AWS Deepen Global Partnership",
   "XMAX AI 完成新一轮战略融资": "XMAX AI Completes New Strategic Investment Round",
@@ -100,6 +101,8 @@ const TRANS_MAP: Record<string, string> = {
   "全球推理网关": "Global Inference Gateway",
   "全球部署区域": "Global Deployment Regions",
   "公司新闻": "Company News",
+  "查看业务版图": "View Business Map",
+  "联系合作": "Contact for Partnership",
   "关于我们": "About",
   "关注我们": "Follow Us",
   "具身智能": "Embodied Intelligence",
@@ -140,7 +143,7 @@ const TRANS_MAP: Record<string, string> = {
   "商品内容生成": "Product Content Generation",
   "商品标题、卖点、详情页与营销素材生成": "Product Title, Selling Points, Detail Pages & Marketing Material Generation",
   "在 AI 推理、模型服务、数据检索与安全治理领域形成平台能力": "Platform capabilities spanning AI inference, model services, data retrieval, and security governance",
-  "在 XMAX 集团体系下，通过 9 大业务板块服务全社会": "Under the XMAX Group system, serving society through 9 business segments with unified AI infrastructure",
+  "在 XMAX 集团体系下，通过 9 大业务板块服务全社会": "Exploring AI application areas within the XMAX Group ecosystem",
   "在卫星与太空站部署边缘 AI 推理节点，支持遥感数据分析、太空通信优化与在轨智能决策。": "Deploying edge AI inference nodes on satellites and space stations, supporting remote sensing data analysis, space communication optimization, and on-orbit intelligent decision-making.",
   "在探索 AI 推理服务落地时，建议从具体业务场景出发，明确推理需求与数据基础。": "When exploring AI inference service deployment, we recommend starting from specific business scenarios and clarifying inference needs and data foundations.",
   "在轨决策": "On-Orbit Decision-Making",
@@ -204,7 +207,6 @@ const TRANS_MAP: Record<string, string> = {
   "快速链接": "Quick Links",
   "您可以通过以下方式联系 XMAX AI，我们期待与您共创未来。": "You can contact XMAX AI through the following channels. We look forward to co-creating the future with you.",
   "感知决策": "Perception & Decision",
-  "我们的团队将在 2 个工作日内回复": "Our team will respond within 2 business days",
   "我们的建议": "Our Suggestions",
   "执行控制": "Execution Control",
   "技术合作与集成方案": "Technical Partnership & Integration Solutions",
@@ -264,6 +266,7 @@ const TRANS_MAP: Record<string, string> = {
   "智能知识服务": "Intelligent Knowledge Services",
   "智能调度": "Intelligent Scheduling",
   "智能风控与量化交易": "Intelligent Risk Control & Quantitative Trading",
+  "量化策略执行": "Quantitative Strategy Execution",
   "服务可用性": "Service Availability",
   "服务对象": "Service Targets",
   "服务机器人与场景任务执行": "Service Robot & Scenario Task Execution",
@@ -287,6 +290,7 @@ const TRANS_MAP: Record<string, string> = {
   "模型管理": "Model Management",
   "模型管理,API 治理,配额控制": "Model management, API governance, quota control",
   "模型网关": "Model Gateway",
+  "音乐创作辅助": "Music Creation Assistance",
   "治理策略": "Governance Strategy",
   "法律信息": "Legal",
   "流程效率优化": "Process Efficiency Optimization",
@@ -364,13 +368,22 @@ const TRANS_MAP: Record<string, string> = {
   "运营": "Operations",
   "运营决策支持": "Operations Decision Support",
   "运营辅助": "Operations Assistance",
+  "依赖 Agent Runtime 与 Data Retrieval Layer": "Depends on Agent Runtime and Data Retrieval Layer",
+  "依赖 Agent Runtime 与 Model Gateway": "Depends on Agent Runtime and Model Gateway",
+  "依赖 Data Retrieval Layer 与 Security Mesh": "Depends on Data Retrieval Layer and Security Mesh",
+  "依赖 Inference Fabric 与 Global Distribution": "Depends on Inference Fabric and Global Distribution",
+  "依赖 Inference Fabric 与 Model Gateway": "Depends on Inference Fabric and Model Gateway",
+  "依赖 Inference Fabric 与 Security Mesh": "Depends on Inference Fabric and Security Mesh",
+  "依赖 Security Mesh 与 Inference Fabric": "Depends on Security Mesh and Inference Fabric",
+  "依赖 Security Mesh 全栈能力": "Depends on full-stack Security Mesh capabilities",
+  "依赖全栈基础设施能力": "Depends on full-stack infrastructure capabilities",
   "远程协同": "Remote Collaboration",
   "远距协同": "Remote Collaboration",
   "远距离、多节点协同的数据处理与决策支持": "Long-Distance, Multi-Node Collaborative Data Processing & Decision Support",
   "远距离协同": "Long-Distance Collaboration",
   "连接产业、模型与真实世界": "Connecting Industry, Models & the Real World",
   "通信优化": "Communication Optimization",
-  "通过 9 大业务板块将 AI 能力转化为可交付的产业服务": "Converting AI capabilities into deliverable industry services through 9 business segments",
+  "通过 9 大业务板块将 AI 能力转化为可交付的产业服务": "Exploring industry workflows with defined AI inputs, outputs, and human review",
   "通过 AI 推理服务为电商平台提供智能推荐、动态定价、供应链预测与客服自动化能力，提升转化效率与用户体验。": "Providing AI inference services for e-commerce platforms with smart recommendations, dynamic pricing, supply chain forecasting, and automated customer service to improve conversion efficiency and user experience.",
   "通过 AI 推理能力优化物流路径、库存管理与需求预测，构建端到端智能供应链服务体系。": "Optimizing logistics routes, inventory management, and demand forecasting through AI inference capabilities to build an end-to-end intelligent supply chain service system.",
   "通过 AWS IAM、KMS、CloudTrail 构建全链路安全与合规体系": "Full-chain security and compliance through AWS IAM, KMS, and CloudTrail",
@@ -381,6 +394,7 @@ const TRANS_MAP: Record<string, string> = {
   "金融": "Finance",
   "金融客服与业务咨询智能化": "Financial Customer Service & Business Consultation Intelligence",
   "金融板块通过 XMAX AI 的模型网关与安全治理层，实现风控模型、客服模型与审计模型的统一接入与合规运行。": "The Finance segment leverages XMAX AI's model gateway and security governance layer to achieve unified access and compliant operation of risk control, customer service, and auditing models.",
+  "金融板块建立在 XMAX AI 的安全治理层、统一推理层与审计能力之上，强调可靠性、可追踪性与服务连续性。": "The Finance segment is built on XMAX AI's security governance layer, unified inference layer, and audit capabilities, emphasizing reliability, traceability, and service continuity.",
   "集团定位": "Group Positioning",
   "集团总部": "Group Headquarters",
   "需求预测": "Demand Forecasting",
@@ -551,8 +565,24 @@ export function deepLocalizeStatic<T>(data: T, target: "zh-Hans" | "en"): T {
     if (data.includes("\n")) {
       return data
         .split("\n")
-        .map((line) => translateStaticToZh(line.trim()))
+        .map((line) => {
+          const prefix = line.match(/^(\s*·\s*)/)?.[1] || "";
+          const bare = line.replace(/^\s*·\s*/, "").trim();
+          return `${prefix}${translateStaticToZh(bare)}`;
+        })
         .join("\n") as unknown as T;
+    }
+    if (data.includes(",")) {
+      return data
+        .split(",")
+        .map((segment) => translateStaticToZh(segment.trim()))
+        .join("、") as unknown as T;
+    }
+    if (data.includes(" / ")) {
+      return data
+        .split(" / ")
+        .map((segment) => translateStaticToZh(segment.trim()))
+        .join(" / ") as unknown as T;
     }
     return data;
   }

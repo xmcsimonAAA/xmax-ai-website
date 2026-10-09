@@ -16,7 +16,7 @@ xmax-ai-website/
 
 ## 2. 环境要求
 
-- Node.js: 18.x 到 22.x
+- Node.js: 18.x 到 22.x，推荐 Node.js 20 LTS
 - npm: 随 Node.js 安装即可
 - 推荐系统: macOS / Linux / Windows Server 均可
 
@@ -25,6 +25,8 @@ xmax-ai-website/
 ```text
 node >=18.0.0 <=22.x.x
 ```
+
+不要使用 Node.js 24 或更新大版本运行 Strapi 后台。即使偶尔能启动，也可能出现后台管理页随机崩溃、依赖编译不稳定等问题。
 
 ## 3. 后端配置
 
@@ -185,18 +187,222 @@ VITE_CMS_URL=http://your-server-ip:1337
 npm run build
 ```
 
-## 8. 多语言与翻译机制
+## 8. 生产反向代理与 ALB 路由
+
+如果前端网站和 Strapi 后端共用同一个域名，不能只把 `/admin` 转发给 Strapi。Strapi 管理后台进入内容管理、媒体库、国际化等页面时，还会请求多个不在 `/admin` 下的插件 API。
+
+必须确保以下路径转发到 Strapi 后端，例如 `http://127.0.0.1:1337`：
+
+```text
+/admin
+/api
+/uploads
+/content-manager
+/content-type-builder
+/upload
+/i18n
+```
+
+前端 SPA 只应该接管其他普通页面路径，例如 `/`。
+
+### 8.1 Nginx 示例
+
+下面示例假设：
+
+- 前端静态文件目录为 `/var/www/xmax-ai/frontend/dist`
+- Strapi 后端监听 `127.0.0.1:1337`
+
+```nginx
+server {
+    listen 80;
+    server_name ai.xmax.com;
+
+    root /var/www/xmax-ai/frontend/dist;
+    index index.html;
+
+    location ^~ /admin {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /api {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /uploads {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /content-manager {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /content-type-builder {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /upload {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ^~ /i18n {
+        proxy_pass http://127.0.0.1:1337;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+修改 Nginx 后执行：
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### 8.2 ALB 路由规则
+
+如果使用 AWS ALB，建议配置两个 target group：
+
+- 前端 target group：静态站点或前端服务
+- 后端 target group：Strapi 服务，端口通常为 `1337`
+
+ALB path rules 必须把以下路径转发到后端 target group：
+
+```text
+/admin*
+/api*
+/uploads*
+/content-manager*
+/content-type-builder*
+/upload*
+/i18n*
+```
+
+默认规则 `/*` 再转发到前端 target group。
+
+### 8.3 部署后路由检查
+
+部署完成后，下面这些请求必须返回 JSON，而不是前端 `index.html`：
+
+```bash
+curl -I https://your-domain.com/admin/project-type
+curl -I https://your-domain.com/api/home-page?locale=en
+curl -I https://your-domain.com/content-manager/content-types
+curl -I https://your-domain.com/content-type-builder/content-types
+curl -I https://your-domain.com/upload/files
+curl -I https://your-domain.com/i18n/locales
+```
+
+如果 `/content-manager/...`、`/content-type-builder/...` 或 `/upload/...` 返回 `text/html`，后台会出现 Content Manager 一直加载、媒体库打不开或 “Something went wrong”。
+
+## 9. 多语言与翻译机制
 
 网站默认首次访问显示英文。
 
 用户手动切换中文或英文后，前端会记住用户选择。
 
-后台内容支持中文和英文。考虑到后续维护可能主要填写中文，项目内已加入两层兜底：
+后台内容支持中文和英文。当前版本已经改为“后台保存多语言内容，前端只读取当前语言内容”的机制：
 
-- 后端可使用 DeepL API 自动翻译内容，需要配置 `DEEPL_API_KEY`
-- 前端包含静态翻译兜底，避免英文页面出现大量中文混杂
+- 英文页面请求 Strapi 的 `locale=en`
+- 中文页面请求 Strapi 的 `locale=zh-Hans`
+- 前端不再在浏览器里临时翻译中文内容
+- 前端不再从另一个语言版本里跨语言补文字或补图片
+- 图片、URL、图标等非语言字段在后台同步时复制到目标语言；图片字段本身仍按 Strapi i18n 配置尽量保持非本地化共享
 
-## 9. 交付建议
+这样做的目的是避免线上接口较慢时先显示中文/旧静态文案，再切换成英文文案的闪烁问题。
+
+### 9.1 自动翻译配置
+
+如果甲方后续主要在后台填写中文，并希望自动生成英文内容，后端必须配置 DeepL：
+
+```text
+DEEPL_API_KEY=your-deepl-api-key
+TRANSLATE_TARGET_LOCALES=zh-Hans,en
+```
+
+配置后，管理员在 Strapi 后台更新中文内容时，后端生命周期 hook 会自动生成或更新英文 locale。
+
+### 9.2 手动同步命令
+
+如果已经批量修改了中文内容，可以在后端目录执行：
+
+```bash
+cd backend
+npm run sync:locales -- --from zh-Hans --to en
+```
+
+如果没有 DeepL Key，开发环境可以临时使用内置静态词典：
+
+```bash
+cd backend
+npm run sync:locales -- --from zh-Hans --to en --static
+```
+
+注意：`--static` 只适合已在词典中覆盖的短句和少量固定文案，不适合正式翻译长篇法律文本、新闻稿或新增业务介绍。脚本已经加入保护：静态翻译后仍含中文的字段不会写入英文 locale。
+
+如果本地调试时误把中文写入英文 locale，可以执行一次：
+
+```bash
+cd backend
+npm run repair:en-content
+```
+
+该命令只用于修复当前项目内置的英文基础内容，不替代正式翻译。
+
+注意：Strapi 管理后台界面固定使用英文 Admin UI。这里指的是后台系统菜单、媒体库、Content Manager 等管理界面语言，不影响网站前台中英文内容。
+
+不要把 `backend/src/admin/app.js` 改成强制 `zh-Hans`，也不要添加不完整的后台中文翻译表，否则 Strapi Admin 的内容管理和媒体库页面可能出现 `Cannot read properties of undefined (reading 'sort')` 报错。
+
+如果线上后台用户曾经使用过中文 Admin UI，请在部署后执行一次：
+
+```bash
+sqlite3 backend/.tmp/data.db "UPDATE admin_users SET prefered_language='en';"
+```
+
+然后重新构建并重启后端：
+
+```bash
+cd backend
+npm run build
+npm run start
+```
+
+如果后台进入 About、Business 等内容编辑页时出现以下报错：
+
+```text
+components[props.attribute.component].layout
+Cannot read properties of undefined (reading 'sort')
+```
+
+通常是 Strapi 数据库里的后台 schema 缓存不完整。项目已在后端启动时自动检查并修复组件 schema 缓存；如果线上数据库已经出现该问题，也可以在后端目录手动执行一次：
+
+```bash
+cd backend
+npm run repair:schema-cache
+npm run build
+npm run start
+```
+
+## 10. 交付建议
 
 完整可运行交付包建议包含：
 
@@ -223,7 +429,7 @@ backend/.strapi/
 
 如果交付对象不熟悉 Node.js 和 npm，为了方便原样运行，也可以保留 `node_modules`，但压缩包会明显变大。
 
-## 10. GitHub 备份说明
+## 11. GitHub 备份说明
 
 当前 GitHub 备份分支：
 
@@ -244,7 +450,7 @@ frontend/dist/
 
 因此，GitHub 备份不能单独代表完整可运行交付包。完整交付仍应以本地压缩包为准。
 
-## 11. 常用启动顺序
+## 12. 常用启动顺序
 
 先启动后端：
 
@@ -266,4 +472,3 @@ npm run dev
 前端: http://localhost:5174/
 后台: http://localhost:1337/admin
 ```
-

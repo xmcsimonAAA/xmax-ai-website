@@ -196,7 +196,12 @@ export interface BusinessUnit extends Struct.ComponentSchema {
     icon: 'briefcase';
   };
   attributes: {
-    alias: Schema.Attribute.String;
+    alias: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     description: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

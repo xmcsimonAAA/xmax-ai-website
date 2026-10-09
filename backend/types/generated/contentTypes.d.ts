@@ -505,7 +505,12 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
           localized: true;
         };
       }>;
-    highlights: Schema.Attribute.Component<'about.highlight-item', true>;
+    highlights: Schema.Attribute.Component<'about.highlight-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -531,11 +536,21 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
-    subsidiaries: Schema.Attribute.Component<'about.subsidiary', true>;
+    subsidiaries: Schema.Attribute.Component<'about.subsidiary', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    values: Schema.Attribute.Component<'about.value-item', true>;
+    values: Schema.Attribute.Component<'about.value-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
   };
 }
 
@@ -556,12 +571,27 @@ export interface ApiAwsPageAwsPage extends Struct.SingleTypeSchema {
     };
   };
   attributes: {
-    awsStats: Schema.Attribute.Component<'aws.stat-item', true>;
+    awsStats: Schema.Attribute.Component<'aws.stat-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     capabilityMappings: Schema.Attribute.Component<
       'aws.capability-mapping',
       true
-    >;
-    coreMessages: Schema.Attribute.Component<'aws.core-message', true>;
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    coreMessages: Schema.Attribute.Component<'aws.core-message', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -596,7 +626,12 @@ export interface ApiAwsPageAwsPage extends Struct.SingleTypeSchema {
       'oneToMany',
       'api::aws-page.aws-page'
     >;
-    narrativePoints: Schema.Attribute.Component<'aws.narrative-point', true>;
+    narrativePoints: Schema.Attribute.Component<'aws.narrative-point', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     quoteChinese: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
@@ -627,7 +662,12 @@ export interface ApiBusinessPageBusinessPage extends Struct.SingleTypeSchema {
     };
   };
   attributes: {
-    businessUnits: Schema.Attribute.Component<'business.unit', true>;
+    businessUnits: Schema.Attribute.Component<'business.unit', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -686,7 +726,12 @@ export interface ApiContactPageContactPage extends Struct.SingleTypeSchema {
     };
   };
   attributes: {
-    contactPoints: Schema.Attribute.Component<'contact.point', true>;
+    contactPoints: Schema.Attribute.Component<'contact.point', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -806,9 +851,24 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ctaPrimaryButton: Schema.Attribute.Component<'home.cta-button', false>;
-    ctaSecondaryButton: Schema.Attribute.Component<'home.cta-button', false>;
-    heroSlides: Schema.Attribute.Component<'home.hero-slide', true>;
+    ctaPrimaryButton: Schema.Attribute.Component<'home.cta-button', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    ctaSecondaryButton: Schema.Attribute.Component<'home.cta-button', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    heroSlides: Schema.Attribute.Component<'home.hero-slide', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -833,10 +893,25 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
           localized: true;
         };
       }>;
-    navCards: Schema.Attribute.Component<'home.nav-card', true>;
+    navCards: Schema.Attribute.Component<'home.nav-card', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
-    recentUpdates: Schema.Attribute.Component<'home.update-item', true>;
-    stats: Schema.Attribute.Component<'home.stat-item', true>;
+    recentUpdates: Schema.Attribute.Component<'home.update-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    stats: Schema.Attribute.Component<'home.stat-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -902,7 +977,12 @@ export interface ApiInfrastructurePageInfrastructurePage
           localized: true;
         };
       }>;
-    layers: Schema.Attribute.Component<'infra.layer', true>;
+    layers: Schema.Attribute.Component<'infra.layer', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1011,7 +1091,12 @@ export interface ApiProductsPageProductsPage extends Struct.SingleTypeSchema {
       'oneToMany',
       'api::products-page.products-page'
     >;
-    products: Schema.Attribute.Component<'product.item', true>;
+    products: Schema.Attribute.Component<'product.item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1101,14 +1186,24 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     footerLinkGroups: Schema.Attribute.Component<
       'site.footer-link-group',
       true
-    >;
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::site-setting.site-setting'
     >;
     logo: Schema.Attribute.Media<'images'>;
-    navItems: Schema.Attribute.Component<'site.nav-item', true>;
+    navItems: Schema.Attribute.Component<'site.nav-item', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     tagline: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{

@@ -101,17 +101,32 @@
     "values": {
       "type": "component",
       "repeatable": true,
-      "component": "about.value-item"
+      "component": "about.value-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "highlights": {
       "type": "component",
       "repeatable": true,
-      "component": "about.highlight-item"
+      "component": "about.highlight-item",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "subsidiaries": {
       "type": "component",
       "repeatable": true,
-      "component": "about.subsidiary"
+      "component": "about.subsidiary",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   },
   "pluginOptions": {

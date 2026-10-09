@@ -7,9 +7,10 @@ import { motion } from "framer-motion";
 import { Building2, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchContactPage, type ContactPageData, mediaUrl, toStrapiLocale } from "@/lib/cms";
-import { useLang, type Lang } from "@/components/Layout";
+import { useLang } from "@/components/Layout";
 import { contact as CT, common as C, t } from "@/lib/i18n";
 import { TypewriterText, TypewriterOnView } from "@/hooks/useTypewriter";
+import { COMPANY } from "@/content/remediation";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Mail,
@@ -22,23 +23,40 @@ export default function Contact() {
   const [data, setData] = useState<ContactPageData | null>(null);
   const { lang } = useLang();
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const isEn = lang === "en";
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setData(null);
+    setHeaderImage(null);
     fetchContactPage(toStrapiLocale(lang)).then((data) => {
-      if (!data) return;
-      setData(data);
-      if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      if (!active) return;
+      if (data) {
+        setData(data);
+        if (data.headerImage) setHeaderImage(mediaUrl(data.headerImage));
+      }
+      setLoading(false);
     });
+    return () => { active = false; };
   }, [lang]);
 
-  const contactPoints = data?.contactPoints?.length
-    ? data.contactPoints
-    : [
-        { id: 1, icon: "Mail", title: "商务合作", description: "合作伙伴、生态对接、商务咨询", value: "business@xmax.ai" },
-        { id: 2, icon: "Phone", title: "AWS 生态合作", description: "AWS 技术对接、联合方案探讨", value: "aws@xmax.ai" },
-        { id: 3, icon: "MapPin", title: "总部地址", description: "新加坡", value: "Singapore" },
-      ].map((p) => ({ ...p })) as ContactPageData["contactPoints"];
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-950">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-600 border-t-white" />
+      </div>
+    );
+  }
+
+  const contactPoints: ContactPageData["contactPoints"] = [
+    { id: 1, icon: "Mail", title: "Official Contact", description: "General corporate and business inquiries", value: COMPANY.emails.official },
+    { id: 2, icon: "MapPin", title: "Registered Office", description: "Nevada registered address", value: COMPANY.registeredAddress },
+    { id: 3, icon: "Building2", title: "Office Address", description: "Commerce, California office", value: COMPANY.officeAddress },
+    { id: 4, icon: "MapPin", title: "APEC Address", description: "Singapore business address", value: COMPANY.apecAddress },
+    ...(COMPANY.phone ? [{ id: 5, icon: "Phone", title: "Corporate Phone", description: "U.S. business line", value: COMPANY.phone }] : []),
+  ];
 
   return (
     <>
@@ -82,9 +100,14 @@ export default function Contact() {
       {/* Contact Cards */}
       <section className="bg-slate-900 py-24 lg:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {contactPoints.map((point, index) => {
               const Icon = ICON_MAP[point.icon] || Mail;
+              const value = point.icon === "Mail" ? (
+                <a className="break-words text-base font-medium text-white hover:text-blue-300" href={`mailto:${point.value}`}>{point.value}</a>
+              ) : point.icon === "Phone" ? (
+                <a className="break-words text-base font-medium text-white hover:text-blue-300" href={COMPANY.phoneHref}>{point.value}</a>
+              ) : point.value;
               return (
                 <motion.div
                   key={point.id ?? index}
@@ -103,7 +126,7 @@ export default function Contact() {
                   <p className="mt-2 text-sm text-slate-500">
                     {point.description}
                   </p>
-                  <p className="mt-3 text-base font-medium text-white">{point.value}</p>
+                  <p className="mt-3 break-words text-base font-medium text-white">{value}</p>
                 </motion.div>
               );
             })}
@@ -167,8 +190,8 @@ export default function Contact() {
                 </Button>
                 <p className="text-xs text-slate-500 leading-relaxed pt-1">
                   {isEn
-                    ? "Please provide your company name and contact details, describe the collaboration areas you are interested in. Our team will respond within 2 business days."
-                    : "请提供您的公司名称与联系方式，描述您感兴趣的合作方向，我们的团队将在 2 个工作日内回复。"}
+                    ? "Please provide your company name and contact details, and describe the collaboration areas you are interested in."
+                    : "请提供您的公司名称与联系方式，并描述您感兴趣的合作方向。"}
                 </p>
               </div>
             </motion.div>

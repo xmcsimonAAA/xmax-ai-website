@@ -55,6 +55,141 @@ const DEEPL_LANGS = {
   ru: "RU",
 };
 
+function toGlobalId(uid) {
+  return uid
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+}
+
+function serializeComponentSchema(uid, schema) {
+  const [category, modelName] = uid.split(".");
+
+  return {
+    collectionName: schema.collectionName,
+    info: schema.info || {},
+    options: schema.options || {},
+    attributes: schema.attributes || {},
+    category,
+    uid,
+    modelType: "component",
+    modelName,
+    globalId: schema.globalId || toGlobalId(uid),
+    ...(schema.pluginOptions ? { pluginOptions: schema.pluginOptions } : {}),
+    __schema__: {
+      collectionName: schema.collectionName,
+      info: schema.info || {},
+      options: schema.options || {},
+      attributes: schema.attributes || {},
+    },
+  };
+}
+
+async function ensureComponentSchemasInCoreStore(strapi) {
+  const components = Object.entries(strapi.components || {});
+  if (components.length === 0) return;
+
+  const tableName = "strapi_core_store_settings";
+  const cacheKey = "strapi_content_types_schema";
+  const row = await strapi.db.connection(tableName).where({ key: cacheKey }).first();
+
+  if (!row?.value) {
+    strapi.log.warn("[schema-cache] Content type schema cache not found; skipping component cache repair");
+    return;
+  }
+
+  let cachedSchemas;
+  try {
+    cachedSchemas = JSON.parse(row.value);
+  } catch (err) {
+    strapi.log.warn(`[schema-cache] Could not parse content type schema cache: ${err.message}`);
+    return;
+  }
+
+  let repairedCount = 0;
+  for (const [uid, schema] of components) {
+    if (cachedSchemas[uid]?.modelType === "component" && cachedSchemas[uid]?.attributes) {
+      continue;
+    }
+
+    cachedSchemas[uid] = serializeComponentSchema(uid, schema);
+    repairedCount += 1;
+  }
+
+  if (repairedCount === 0) return;
+
+  await strapi.db.connection(tableName).where({ key: cacheKey }).update({
+    value: JSON.stringify(cachedSchemas),
+  });
+
+  strapi.log.info(`[schema-cache] Repaired ${repairedCount} component schema cache entries`);
+}
+
+async function ensureContentManagerEditorConfigurations(strapi) {
+  const contentManager = strapi.plugin("content-manager");
+  if (!contentManager) {
+    strapi.log.warn("[content-manager] Plugin not found; skipping editor configuration sync");
+    return;
+  }
+
+  await contentManager.service("components").syncConfigurations();
+  await contentManager.service("content-types").syncConfigurations();
+
+  const componentUids = Object.keys(strapi.components || {});
+  const missingOrMalformed = [];
+
+  for (const uid of componentUids) {
+    const row = await strapi.db.connection("strapi_core_store_settings")
+      .where({ key: `plugin_content_manager_configuration_components::${uid}` })
+      .first();
+
+    if (!row?.value) {
+      missingOrMalformed.push(uid);
+      continue;
+    }
+
+    try {
+      const config = JSON.parse(row.value);
+      if (!Array.isArray(config?.layouts?.edit) || !config.metadatas || !config.settings) {
+        missingOrMalformed.push(uid);
+      }
+    } catch (err) {
+      missingOrMalformed.push(uid);
+    }
+  }
+
+  if (missingOrMalformed.length > 0) {
+    strapi.log.warn(
+      `[content-manager] Component editor configuration still incomplete for: ${missingOrMalformed.join(", ")}`
+    );
+    return;
+  }
+
+  strapi.log.info(`[content-manager] Synced ${componentUids.length} component editor configurations`);
+}
+
+async function ensureDefaultContentLocale(strapi) {
+  const localesService = strapi.plugin("i18n")?.service("locales");
+  if (!localesService) {
+    strapi.log.warn("[i18n] Plugin not found; skipping default content locale check");
+    return;
+  }
+
+  const preferredLocale = process.env.STRAPI_DEFAULT_LOCALE || "en";
+  const locale = await localesService.findByCode(preferredLocale);
+  if (!locale) {
+    strapi.log.warn(`[i18n] Locale ${preferredLocale} not found; keeping existing default locale`);
+    return;
+  }
+
+  const currentDefault = await localesService.getDefaultLocale();
+  if (currentDefault === preferredLocale) return;
+
+  await localesService.setDefaultLocale({ code: preferredLocale });
+  strapi.log.info(`[i18n] Set default content locale to ${preferredLocale}`);
+}
+
 async function ensurePublicReadPermissions(strapi) {
   const role = await strapi.db.query("plugin::users-permissions.role").findOne({
     where: { type: "public" },
@@ -146,23 +281,44 @@ async function translateText(text, sourceLocale, targetLocale) {
   return json.translations?.[0]?.text || text;
 }
 
+function hasStoredValue(value) {
+  if (Array.isArray(value)) return value.length > 0;
+  return value !== null && value !== undefined && value !== "";
+}
+
+function serializeMediaValue(value, attr) {
+  if (!hasStoredValue(value)) return value;
+  if (attr.multiple) {
+    return (Array.isArray(value) ? value : [value])
+      .map((item) => (typeof item === "object" ? item.id : item))
+      .filter(Boolean);
+  }
+  return typeof value === "object" ? value.id : value;
+}
+
+function shouldCopySharedField(attr) {
+  return attr.pluginOptions?.i18n?.localized !== true;
+}
+
 function buildPopulate(strapi, modelUid, depth = 0) {
-  if (depth > 4) return true;
+  if (depth > 4) return "*";
 
   const schema = strapi.getModel(modelUid);
-  if (!schema?.attributes) return true;
+  if (!schema?.attributes) return "*";
 
   const populate = {};
   for (const [field, attr] of Object.entries(schema.attributes)) {
     if (attr.type === "media") {
-      populate[field] = true;
+      populate[field] = {
+        fields: ["id", "documentId", "name", "alternativeText", "caption", "width", "height", "url", "formats"],
+      };
     }
     if (attr.type === "component" && attr.component) {
       populate[field] = { populate: buildPopulate(strapi, attr.component, depth + 1) };
     }
   }
 
-  return Object.keys(populate).length > 0 ? populate : true;
+  return Object.keys(populate).length > 0 ? populate : "*";
 }
 
 async function translateBySchema(strapi, modelUid, sourceValue, targetValue, sourceLocale, targetLocale) {
@@ -181,6 +337,17 @@ async function translateBySchema(strapi, modelUid, sourceValue, targetValue, sou
 
     if (TRANSLATABLE_TYPES.has(attr.type) && attr.pluginOptions?.i18n?.localized) {
       result[field] = await translateText(sourceFieldValue, sourceLocale, targetLocale);
+      continue;
+    }
+
+    if (attr.type === "media" && shouldCopySharedField(attr)) {
+      const mediaValue = serializeMediaValue(sourceFieldValue, attr);
+      if (hasStoredValue(mediaValue)) result[field] = mediaValue;
+      continue;
+    }
+
+    if (attr.type !== "component" && attr.type !== "relation" && shouldCopySharedField(attr)) {
+      result[field] = sourceFieldValue;
       continue;
     }
 
@@ -290,6 +457,9 @@ function scheduleTranslation(strapi, uid, result) {
 
 module.exports = {
   async bootstrap({ strapi }) {
+    await ensureComponentSchemasInCoreStore(strapi);
+    await ensureContentManagerEditorConfigurations(strapi);
+    await ensureDefaultContentLocale(strapi);
     await ensurePublicReadPermissions(strapi);
 
     if (!process.env.DEEPL_API_KEY) {

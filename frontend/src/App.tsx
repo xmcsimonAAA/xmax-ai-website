@@ -22,6 +22,9 @@ import NewsArticle from "@/pages/NewsArticle";
 import BusinessUnitPage from "@/pages/BusinessUnitPage";
 import LegalPage from "@/pages/LegalPage";
 import SimpleContentPage from "@/pages/SimpleContentPage";
+import Team from "@/pages/Team";
+import TrustCenter from "@/pages/TrustCenter";
+import Sla from "@/pages/Sla";
 
 /**
  * 自定义 hash location hook：剥离 ?scrollTo=xxx 查询参数，
@@ -48,6 +51,9 @@ function AppRouter() {
           <Route path="/business" component={Business} />
           <Route path="/aws" component={AWSPage} />
           <Route path="/contact" component={Contact} />
+          <Route path="/team" component={Team} />
+          <Route path="/trust" component={TrustCenter} />
+          <Route path="/sla" component={Sla} />
           <Route path="/news/:id" component={NewsArticle} />
           <Route path="/news" component={News} />
           <Route path="/privacy">

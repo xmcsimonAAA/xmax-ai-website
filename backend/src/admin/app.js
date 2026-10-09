@@ -1,142 +1,333 @@
+const EDIT_VIEW_LAYOUT_HOOK = "Admin/CM/pages/EditView/mutate-edit-view-layout";
+const CONTENT_LOCALE_STORAGE_KEY = "xmax-admin-content-locale";
+const I18N_LOCALE_QUERY_KEY = "plugins[i18n][locale]";
+const SUPPORTED_CONTENT_LOCALES = new Set(["en", "zh-Hans"]);
+const DEFAULT_CONTENT_LOCALE = "en";
+
+let recentLocaleRepair = null;
+
+function formatComponentDisplayName(uid) {
+  return uid
+    .split(".")
+    .pop()
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function walkLayoutFields(node, visitor) {
+  if (Array.isArray(node)) {
+    node.forEach((child) => walkLayoutFields(child, visitor));
+    return;
+  }
+
+  if (!node || typeof node !== "object" || !node.attribute) return;
+
+  visitor(node);
+}
+
+function protectComponentLayouts(layout) {
+  if (!layout || typeof layout !== "object") return layout;
+
+  const components = { ...(layout.components || {}) };
+  const protectedLayout = { ...layout, components };
+  const scanQueue = [protectedLayout.layout];
+  const queuedComponentUids = new Set(Object.keys(components));
+
+  Object.values(components).forEach((componentLayout) => {
+    scanQueue.push(componentLayout?.layout);
+  });
+
+  const ensureComponent = (uid) => {
+    if (!uid || components[uid]) return;
+
+    components[uid] = {
+      layout: [],
+      settings: {
+        displayName: formatComponentDisplayName(uid),
+      },
+    };
+    scanQueue.push(components[uid].layout);
+  };
+
+  for (let index = 0; index < scanQueue.length; index += 1) {
+    walkLayoutFields(scanQueue[index], (field) => {
+      const attribute = field.attribute || {};
+
+      if (attribute.type === "component") {
+        ensureComponent(attribute.component);
+      }
+
+      if (attribute.type === "dynamiczone" && Array.isArray(attribute.components)) {
+        attribute.components.forEach(ensureComponent);
+      }
+
+      if (attribute.type === "component" && attribute.component && !queuedComponentUids.has(attribute.component)) {
+        queuedComponentUids.add(attribute.component);
+        scanQueue.push(components[attribute.component]?.layout);
+      }
+    });
+  }
+
+  return protectedLayout;
+}
+
+function getUrlFromInput(inputUrl) {
+  if (!inputUrl || typeof window === "undefined") return null;
+
+  try {
+    if (typeof inputUrl === "object" && !(inputUrl instanceof URL)) {
+      const pathname = inputUrl.pathname || window.location.pathname;
+      const search = inputUrl.search || "";
+      const hash = inputUrl.hash || "";
+      return new URL(`${pathname}${search}${hash}`, window.location.href);
+    }
+
+    return new URL(inputUrl.toString(), window.location.href);
+  } catch {
+    return null;
+  }
+}
+
+function isContentManagerUrl(url) {
+  return url?.origin === window.location.origin && url.pathname.includes("/content-manager/");
+}
+
+function isLocalizedContentManagerUrl(url) {
+  return (
+    isContentManagerUrl(url) &&
+    (url.pathname.includes("/content-manager/single-types/") ||
+      url.pathname.includes("/content-manager/collection-types/"))
+  );
+}
+
+function getContentManagerPathParts(url) {
+  const marker = "/content-manager/";
+  const markerIndex = url?.pathname.indexOf(marker) ?? -1;
+  if (markerIndex === -1) return [];
+
+  return url.pathname
+    .slice(markerIndex + marker.length)
+    .split("/")
+    .filter(Boolean);
+}
+
+function isContentManagerTypeRootUrl(url) {
+  const [kind, uid, extraSegment] = getContentManagerPathParts(url);
+  return (kind === "single-types" || kind === "collection-types") && Boolean(uid) && !extraSegment;
+}
+
+function getContentLocaleFromUrl(url) {
+  const locale = url?.searchParams.get(I18N_LOCALE_QUERY_KEY);
+  return SUPPORTED_CONTENT_LOCALES.has(locale) ? locale : null;
+}
+
+function toRelativeUrl(url) {
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function setRecentLocaleRepair(url, locale) {
+  recentLocaleRepair = {
+    locale,
+    pathname: url.pathname,
+    expiresAt: Date.now() + 2000,
+  };
+}
+
+function shouldKeepRepairedLocale(url, localeFromUrl) {
+  if (!recentLocaleRepair || Date.now() > recentLocaleRepair.expiresAt) {
+    recentLocaleRepair = null;
+    return false;
+  }
+
+  return recentLocaleRepair.pathname === url.pathname && recentLocaleRepair.locale !== localeFromUrl;
+}
+
+function shouldPreferStoredLocaleForNavigation(url, localeFromUrl) {
+  const currentUrl = getUrlFromInput(window.location.href);
+  if (!isLocalizedContentManagerUrl(currentUrl) || !isContentManagerTypeRootUrl(url)) return false;
+  if (currentUrl.pathname === url.pathname) return false;
+
+  const storedLocale = getStoredContentLocale();
+  return Boolean(storedLocale && localeFromUrl && storedLocale !== localeFromUrl);
+}
+
+function getStoredContentLocale() {
+  try {
+    const locale = window.localStorage.getItem(CONTENT_LOCALE_STORAGE_KEY);
+    return SUPPORTED_CONTENT_LOCALES.has(locale) ? locale : DEFAULT_CONTENT_LOCALE;
+  } catch {
+    return DEFAULT_CONTENT_LOCALE;
+  }
+}
+
+function getCurrentOrStoredContentLocale() {
+  const currentUrl = getUrlFromInput(window.location.href);
+  const localeFromUrl = getContentLocaleFromUrl(currentUrl);
+  if (localeFromUrl) {
+    rememberContentLocale(localeFromUrl);
+    return localeFromUrl;
+  }
+
+  return getStoredContentLocale();
+}
+
+function rememberContentLocale(locale) {
+  if (!SUPPORTED_CONTENT_LOCALES.has(locale)) return;
+
+  try {
+    window.localStorage.setItem(CONTENT_LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // Ignore storage failures; navigation should continue normally.
+  }
+}
+
+function rememberContentLocaleFromUrl(inputUrl) {
+  const url = getUrlFromInput(inputUrl);
+  const locale = getContentLocaleFromUrl(url);
+  rememberContentLocale(locale);
+  return locale;
+}
+
+function withRememberedContentLocale(inputUrl) {
+  const url = getUrlFromInput(inputUrl);
+  if (!isLocalizedContentManagerUrl(url)) return inputUrl;
+
+  const localeFromUrl = getContentLocaleFromUrl(url);
+  if (localeFromUrl && shouldKeepRepairedLocale(url, localeFromUrl)) {
+    url.searchParams.set(I18N_LOCALE_QUERY_KEY, recentLocaleRepair.locale);
+    return toRelativeUrl(url);
+  }
+
+  if (shouldPreferStoredLocaleForNavigation(url, localeFromUrl)) {
+    const storedLocale = getStoredContentLocale();
+    url.searchParams.set(I18N_LOCALE_QUERY_KEY, storedLocale);
+    setRecentLocaleRepair(url, storedLocale);
+    return toRelativeUrl(url);
+  }
+
+  if (localeFromUrl) {
+    rememberContentLocale(localeFromUrl);
+    return inputUrl;
+  }
+
+  const locale = getCurrentOrStoredContentLocale();
+  if (!locale) return inputUrl;
+
+  url.searchParams.set(I18N_LOCALE_QUERY_KEY, locale);
+  setRecentLocaleRepair(url, locale);
+  return toRelativeUrl(url);
+}
+
+function syncContentLocaleFromLocation({ repairMissing = false } = {}) {
+  const currentUrl = getUrlFromInput(window.location.href);
+  if (!isLocalizedContentManagerUrl(currentUrl)) return;
+
+  const localeFromUrl = getContentLocaleFromUrl(currentUrl);
+  if (localeFromUrl) {
+    if (shouldKeepRepairedLocale(currentUrl, localeFromUrl)) {
+      currentUrl.searchParams.set(I18N_LOCALE_QUERY_KEY, recentLocaleRepair.locale);
+      window.history.replaceState(window.history.state, "", toRelativeUrl(currentUrl));
+      return;
+    }
+
+    rememberContentLocale(localeFromUrl);
+    return;
+  }
+
+  if (!repairMissing) return;
+
+  const locale = getCurrentOrStoredContentLocale();
+  currentUrl.searchParams.set(I18N_LOCALE_QUERY_KEY, locale);
+  setRecentLocaleRepair(currentUrl, locale);
+  const nextUrl = toRelativeUrl(currentUrl);
+  if (nextUrl !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+    window.history.replaceState(window.history.state, "", nextUrl);
+  }
+}
+
+function getContentManagerLocaleSearch() {
+  const locale = getCurrentOrStoredContentLocale();
+  return locale ? `?${I18N_LOCALE_QUERY_KEY}=${encodeURIComponent(locale)}` : "";
+}
+
+function scheduleContentLocaleSync() {
+  window.setTimeout(() => {
+    syncContentLocaleFromLocation({ repairMissing: true });
+  }, 0);
+}
+
+function preserveContentManagerLocale() {
+  if (typeof window === "undefined" || window.__xmaxAdminLocalePatchApplied) return;
+
+  window.__xmaxAdminLocalePatchApplied = true;
+  window.__xmaxGetContentManagerLocaleSearch = getContentManagerLocaleSearch;
+  window.__xmaxAdminLocaleState = () => ({
+    href: window.location.href,
+    storedLocale: getStoredContentLocale(),
+    currentLocale: getCurrentOrStoredContentLocale(),
+    recentLocaleRepair,
+  });
+
+  syncContentLocaleFromLocation();
+
+  const currentUrlWithLocale = withRememberedContentLocale(window.location.href);
+  if (currentUrlWithLocale && currentUrlWithLocale !== window.location.href) {
+    window.history.replaceState(window.history.state, "", currentUrlWithLocale);
+  }
+  syncContentLocaleFromLocation();
+
+  const patchHistoryMethod = (methodName) => {
+    const original = window.history[methodName];
+    window.history[methodName] = function patchedHistoryMethod(state, title, inputUrl) {
+      const nextUrl = inputUrl ? withRememberedContentLocale(inputUrl) : inputUrl;
+      const result = original.call(this, state, title, nextUrl);
+      rememberContentLocaleFromUrl(nextUrl || window.location.href);
+      scheduleContentLocaleSync();
+      return result;
+    };
+  };
+
+  patchHistoryMethod("pushState");
+  patchHistoryMethod("replaceState");
+
+  document.addEventListener(
+    "click",
+    (event) => {
+      const anchor = event.target?.closest?.("a[href]");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      const nextHref = withRememberedContentLocale(href);
+      if (nextHref && nextHref !== href) {
+        anchor.setAttribute("href", nextHref);
+      }
+
+      scheduleContentLocaleSync();
+    },
+    true
+  );
+
+  window.addEventListener("popstate", () => {
+    syncContentLocaleFromLocation({ repairMissing: true });
+  });
+
+  window.setInterval(() => {
+    syncContentLocaleFromLocation({ repairMissing: true });
+  }, 300);
+}
+
 export default {
   config: {
-    locales: ["zh-Hans"],
-    translations: {
-      "zh-Hans": {
-        // Admin Dashboard
-        "HomePage.head.title": "首页",
-        "HomePage.header.title": "你好 {name}",
-        "HomePage.header.subtitle": "欢迎来到管理后台",
-        "HomePage.widget.no-data": "暂无内容",
-        "HomePage.widget.no-permissions": "无权查看此组件",
-        "HomePage.addWidget.title": "添加组件",
-        "HomePage.addWidget.button": "添加组件",
+    locales: ["en"],
+  },
+  bootstrap(app) {
+    preserveContentManagerLocale();
 
-        // Guided tour
-        "tours.overview.title": "探索你的应用！",
-        "tours.overview.subtitle": "跟随引导教程，充分了解 Strapi。",
-        "tours.overview.close": "关闭引导教程",
-        "tours.overview.tasks": "你的任务",
-        "tours.overview.contentTypeBuilder.label": "创建数据模型",
-        "tours.overview.contentTypeBuilder.done": "完成",
-        "tours.overview.apiTokens.label": "复制 API 令牌",
-        "tours.overview.apiTokens.done": "完成",
-        "tours.overview.strapiCloud.label": "部署应用到 Strapi Cloud",
-        "tours.overview.strapiCloud.link": "阅读文档",
-        "tours.overview.tour.link": "开始",
-        "tours.overview.tour.done": "完成",
-        "form.button.done": "完成",
-
-        // Core UI
-        "Content Manager": "内容管理",
-        "Content Type Builder": "内容类型构建器",
-        "Media Library": "媒体库",
-        "Roles & Permissions": "角色与权限",
-        Documentation: "文档",
-        Users: "用户",
-        Analytics: "分析",
-        Email: "邮箱",
-        Password: "密码",
-        Provider: "提供商",
-        ResetPasswordToken: "重置密码令牌",
-        Role: "角色",
-        Username: "用户名",
-        "New entry": "新条目",
-        anErrorOccurred: "出错了，请重试。",
-        noPreview: "无预览可用",
-        clearLabel: "清除",
-        dark: "深色",
-        light: "浅色",
-        or: "或",
-        selectButtonTitle: "选择",
-        skipToContent: "跳转到内容",
-        submit: "提交",
-
-        // Auth
-        "Auth.form.email.label": "邮箱",
-        "Auth.form.email.placeholder": "例如：user@example.com",
-        "Auth.form.password.label": "密码",
-        "Auth.form.password.hint": "至少8个字符，包含1个大写、1个小写和1个数字",
-        "Auth.form.button.login": "登录",
-        "Auth.form.button.register": "开始",
-        "Auth.form.button.forgot-password": "发送邮件",
-        "Auth.form.button.go-home": "返回首页",
-        "Auth.form.button.password-recovery": "密码找回",
-        "Auth.form.confirmPassword.label": "确认密码",
-        "Auth.form.currentPassword.label": "当前密码",
-        "Auth.form.firstname.label": "名字",
-        "Auth.form.firstname.placeholder": "例如：张三",
-        "Auth.form.lastname.label": "姓氏",
-        "Auth.form.lastname.placeholder": "例如：李四",
-        "Auth.form.username.label": "用户名",
-        "Auth.form.username.placeholder": "例如：zhangsan",
-        "Auth.form.rememberMe.label": "记住我",
-        "Auth.form.welcome.title": "欢迎来到 Strapi！",
-        "Auth.form.welcome.subtitle": "登录你的 Strapi 账户",
-        "Auth.link.forgot-password": "忘记密码？",
-        "Auth.link.signin": "登录",
-        "Auth.link.signin.account": "已有账户？",
-        "Auth.link.ready": "准备登录？",
-        "Auth.reset-password.title": "重置密码",
-        "Auth.form.active.label": "启用",
-        "Auth.form.password.hide-password": "隐藏密码",
-        "Auth.form.password.show-password": "显示密码",
-
-        // Content Manager Plugin
-        "widget.last-edited.title": "最近编辑",
-        "widget.last-edited.single-type": "单例类型",
-        "widget.last-edited.no-data": "暂无编辑内容",
-        "widget.last-published.title": "最近发布",
-        "widget.last-published.no-data": "暂无发布内容",
-        "widget.chart-entries.title": "条目",
-        "widget.chart-entries.count.label": "{count, plural, =0 {条目} one {条目} other {条目}}",
-        "components.LeftMenu.collection-types": "集合类型",
-        "components.LeftMenu.single-types": "单例类型",
-        "components.LeftMenu.Search.label": "搜索内容类型",
-        "components.Search.placeholder": "搜索条目...",
-        "containers.edit.panels.default.title": "条目",
-        "containers.edit.title.new": "创建条目",
-        "containers.EditView.add.new-entry": "添加条目",
-        "success.record.save": "已保存",
-        "HeaderLayout.button.label-add-entry": "创建新条目",
-        "actions.edit.label": "编辑",
-        "actions.delete.label": "删除条目{isLocalized, select, true { (所有语言)} other {}}",
-        "actions.discard.label": "放弃更改",
-        "actions.clone.label": "复制",
-        "containers.edit.tabs.label": "文档状态",
-        "containers.edit.information.last-published.label": "已发布",
-        "containers.edit.information.last-draft.label": "已更新",
-        "containers.edit.information.document.label": "已创建",
-        "containers.edit.information.documentId.label": "文档 ID",
-        "containers.list.autoCloneModal.title": "此条目无法直接复制。",
-        "containers.list.autoCloneModal.description": "将创建一个内容相同的新条目，但你需要更改以下字段才能保存。",
-        "components.empty-repeatable": "暂无条目，点击添加。",
-        "components.reset-entry": "重置条目",
-        "components.notification.info.maximum-requirement": "已达到字段数量上限",
-        "components.notification.info.minimum-requirement": "已添加一个字段以满足最低要求",
-        "components.DragHandle-label": "拖动",
-        "components.FieldSelect.label": "添加字段",
-        "components.RelationInput.icon-button-aria-label": "拖动",
-        "components.RelationInputModal.button-fullpage": "前往条目",
-        "components.TableDelete.label": "已选择 {number, plural, one {# 个条目} other {# 个条目}}",
-        "components.Filters.usersSelect.label": "搜索并选择要筛选的用户",
-        "components.NotAllowedInput.text": "无权查看此字段",
-        "containers.edit-settings.modal-form.label": "标签",
-        "containers.edit-settings.modal-form.mainField": "条目标题",
-        "containers.edit-settings.modal-form.mainField.hint": "设置在编辑和列表视图中显示的字段",
-        "containers.edit-settings.modal-form.editable": "可编辑字段",
-        "containers.SettingPage.add.field": "插入其他字段",
-        "containers.SettingPage.add.relational-field": "插入其他关联字段",
-        "containers.SettingPage.attributes": "属性字段",
-        "containers.SettingPage.attributes.description": "定义属性的顺序",
-        "containers.edit.information": "信息",
-        "containers.list.selectedEntriesModal.selectedCount.publish": "<b>{publishedCount}</b> {publishedCount, plural, =0 {个条目} one {个条目} other {个条目}} 已发布。<b>{draftCount}</b> {draftCount, plural, =0 {个条目} one {个条目} other {个条目}} 准备发布。<b>{withErrorsCount}</b> {withErrorsCount, plural, =0 {个条目} one {个条目} other {个条目}} 待处理。",
-        "containers.list.selectedEntriesModal.selectedCount.unpublish": "<b>{draftCount}</b> {draftCount, plural, =0 {个条目} one {个条目} other {个条目}} 已取消发布。<b>{publishedCount}</b> {publishedCount, plural, =0 {个条目} one {个条目} other {个条目}} 准备取消发布。",
-        "pages.ListView.header-subtitle": "找到 {number, plural, =0 {# 个条目} one {# 个条目} other {# 个条目}}",
-        "popUpWarning.warning.has-draft-relations.message": "此条目关联了 {count, plural, one {# 个草稿条目} other {# 个草稿条目}}，发布可能导致应用中出现断链。",
-        "popUpwarning.warning.bulk-has-draft-relations.message": "<b>{count} {count, plural, one { 个关联 } other { 个关联 } } 在 {entities} { entities, plural, one { 个条目 } other { 个条目 } } 中 {count, plural, one { 尚未发布 } other { 尚未发布 } }</b>，可能导致意外行为。",
-        "utils.data-loaded": "{number, plural, =1 {个条目} other {个条目}} 已成功加载",
-      },
-    },
+    app.registerHook?.(EDIT_VIEW_LAYOUT_HOOK, ({ layout, query }) => ({
+      layout: protectComponentLayouts(layout),
+      query,
+    }));
   },
 };
