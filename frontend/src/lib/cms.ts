@@ -7,6 +7,7 @@
  * - 静态字典仅用于把已知的混杂文案纠正回当前 locale。
  */
 import { deepLocalizeStatic } from "./translations-static";
+import { aboutApplicationCopy, businessApplicationPage, homeApplicationCopy } from "@/content/business";
 
 // 开发模式走 Vite 代理，生产模式用环境变量
 const CMS_BASE = import.meta.env.VITE_CMS_URL || "";
@@ -401,19 +402,21 @@ export interface LegalPageData {
 // ─── API fetch functions ────────────────────────────
 
 export async function fetchHomePage(locale?: StrapiLocale): Promise<HomePageData | null> {
-  return fetchSingleType<HomePageData>("/home-page", [
+  const data = await fetchSingleType<HomePageData>("/home-page", [
     "heroSlides", "navCards", "stats", "recentUpdates", "ctaPrimaryButton", "ctaSecondaryButton",
   ], locale, undefined, {
     heroSlides: { subComponents: [], mediaFields: ["image"] },
     navCards: { subComponents: [], mediaFields: ["image"] },
     recentUpdates: { subComponents: [], mediaFields: ["image"] },
   });
+  return homeApplicationCopy(data, locale);
 }
 
 export async function fetchAboutPage(locale?: StrapiLocale): Promise<AboutPageData | null> {
-  return fetchSingleType<AboutPageData>("/about-page", [
+  const data = await fetchSingleType<AboutPageData>("/about-page", [
     "values", "highlights", "subsidiaries",
   ], locale, ["headerImage"]);
+  return aboutApplicationCopy(data, locale);
 }
 
 export async function fetchInfrastructurePage(locale?: StrapiLocale): Promise<InfrastructurePageData | null> {
@@ -427,13 +430,14 @@ export async function fetchProductsPage(locale?: StrapiLocale): Promise<Products
 }
 
 export async function fetchBusinessPage(locale?: StrapiLocale): Promise<BusinessPageData | null> {
-  return fetchSingleType<BusinessPageData>("/business-page", ["businessUnits"], locale, ["headerImage"], {
+  const data = await fetchSingleType<BusinessPageData>("/business-page", ["businessUnits"], locale, ["headerImage"], {
     businessUnits: {
       subComponents: ["sections"],
       mediaFields: ["image"],
       subComponentMediaFields: { sections: ["image"] },
     },
   });
+  return businessApplicationPage(data, locale);
 }
 
 export async function fetchAwsPage(locale?: StrapiLocale): Promise<AwsPageData | null> {

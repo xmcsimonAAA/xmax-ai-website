@@ -411,6 +411,9 @@ function repairAws(db) {
 function repairContact(db) {
   const zhId = pageId(db, "contact_pages", "zh-Hans");
   const enId = pageId(db, "contact_pages", "en");
+  const registeredAddress = process.env.XMAX_REGISTERED_ADDRESS || "732 S 6TH ST, STE R Las Vegas, NV 89101";
+  const phone = process.env.XMAX_CONTACT_PHONE || "+1(323)888-9999";
+  const officialEmail = process.env.XMAX_OFFICIAL_EMAIL || "info@xmax.com";
 
   updateByLocale(db, "contact_pages", "zh-Hans", {
     header_label: "联系我们",
@@ -428,14 +431,14 @@ function repairContact(db) {
   });
 
   updateRows(db, "components_contact_points", componentIds(db, "contact_pages_cmps", zhId, "contactPoints"), [
-    { icon: "Mail", title: "商务合作", description: "商务合作与生态对接", value: "business@xmaxai.com" },
-    { icon: "Building2", title: "人才加入", description: "加入 XMAX AI 团队", value: "careers@xmaxai.com" },
-    { icon: "MapPin", title: "全球办公室", description: "全球办公地点", value: "新加坡 / 香港 / 商务合作网络" },
+    { icon: "Mail", title: "Official Contact", description: "General corporate and business inquiries", value: officialEmail },
+    { icon: "MapPin", title: "Registered Office", description: "Nevada registered address", value: registeredAddress },
+    { icon: "Phone", title: "Corporate Phone", description: "U.S. business line", value: phone },
   ]);
   updateRows(db, "components_contact_points", componentIds(db, "contact_pages_cmps", enId, "contactPoints"), [
-    { icon: "Mail", title: "Business Partnership", description: "Business partnership and ecosystem integration", value: "business@xmaxai.com" },
-    { icon: "Building2", title: "Talent Recruitment", description: "Join the XMAX AI team", value: "careers@xmaxai.com" },
-    { icon: "MapPin", title: "Global Offices", description: "Global office locations", value: "Singapore / Hong Kong / Business Network" },
+    { icon: "Mail", title: "Official Contact", description: "General corporate and business inquiries", value: officialEmail },
+    { icon: "MapPin", title: "Registered Office", description: "Nevada registered address", value: registeredAddress },
+    { icon: "Phone", title: "Corporate Phone", description: "U.S. business line", value: phone },
   ]);
 }
 
@@ -475,29 +478,34 @@ function repairSiteSettings(db) {
 }
 
 function repairLegal(db) {
+  const registeredAddress = process.env.XMAX_REGISTERED_ADDRESS || "732 S 6TH ST, STE R Las Vegas, NV 89101";
+  const phone = process.env.XMAX_CONTACT_PHONE || "+1(323)888-9999";
+  const legalEmail = process.env.XMAX_OFFICIAL_EMAIL || "info@xmax.com";
+  const privacyContent = `Effective date: April 1, 2026\n\nScope\nThis Privacy Policy explains how XMax AI Inc. collects, uses, discloses, and protects information through ai.xmax.com and related enterprise services.\n\nInformation and use\nWe may collect contact, account, support, usage, diagnostic, device, log, security-review, and procurement-review information. We use it to provide and secure services, respond to inquiries, operate inference services, monitor reliability, prevent abuse, comply with law, and improve products. We do not use customer prompts or outputs to train general-purpose models unless authorized in writing.\n\nSharing and retention\nWe may share information with service providers, group companies, professional advisers, or authorities where required by law or necessary to protect rights and safety. We do not sell personal information and retain information only as needed for the stated purpose, legal obligations, dispute resolution, and security records.\n\nSecurity and international processing\nWe use access controls, logging, encryption where appropriate, and least-privilege operational practices. Services may process information in the United States and other approved locations; data residency and transfer requirements are reviewed during enterprise onboarding.\n\nRights and contact\nDepending on location, individuals may request access, correction, deletion, or restriction of processing by contacting ${legalEmail}. XMax AI Inc., ${registeredAddress}, ${phone}.`;
+  const termsContent = `Effective date: April 1, 2026\n\nAgreement\nThese Terms govern access to ai.xmax.com and related services provided by XMax AI Inc. By using the services, you represent that you have authority to bind your organization.\n\nServices and acceptable use\nServices include enterprise AI inference, model access, routing, knowledge, agent, security, and related infrastructure services described in an order form. You may not violate law, infringe rights, evade sanctions or export controls, interfere with the service, bypass access controls, or submit data you are not authorized to process.\n\nExport and trade compliance\nEach party will comply with applicable export-control, sanctions, customs, and trade laws. Customers must provide accurate end-user, end-use, destination, and ownership information when requested. We may restrict a transaction or workload when required for compliance or risk management.\n\nIntellectual property and confidentiality\nEach party retains pre-existing intellectual property and will protect the other party's non-public information. XMax AI retains rights in its software, architecture, documentation, and improvements.\n\nFees, liability, and termination\nFees, usage measurements, support, and service levels are stated in the applicable service schedule. To the maximum extent permitted by law, XMax AI disclaims implied warranties and will not be liable for indirect or consequential damages. Either party may terminate for an uncured material breach.\n\nGoverning law and contact\nThese Terms are governed by Nevada law unless a signed enterprise agreement states otherwise. XMax AI Inc., ${registeredAddress}, ${legalEmail}, ${phone}.`;
   updateByLocale(db, "privacy_pages", "en", {
     title: "Privacy Policy",
-    content: "Content will be available soon. Please check back later.",
+    content: privacyContent,
   });
   updateByLocale(db, "terms_pages", "en", {
     title: "Terms of Service",
-    content: "Content will be available soon. Please check back later.",
+    content: termsContent,
   });
   updateByLocale(db, "enterprise_service_pages", "zh-Hans", {
     title: "企业服务",
-    content: "内容即将上线，敬请期待。",
+    content: "XMax AI provides enterprise inference services through scoped deployment programs, governed model access, integration support, and operational review.",
   });
   updateByLocale(db, "enterprise_service_pages", "en", {
     title: "Enterprise Service",
-    content: "Content will be available soon. Please check back later.",
+    content: "XMax AI provides enterprise inference services through scoped deployment programs, governed model access, integration support, and operational review. Each program begins with workload discovery, data and access review, architecture validation, and a written operating plan.",
   });
   updateByLocale(db, "security_governance_pages", "zh-Hans", {
     title: "安全与治理",
-    content: "内容即将上线，敬请期待。",
+    content: "XMax AI applies identity, access, logging, data handling, and export-compliance controls to enterprise AI workloads.",
   });
   updateByLocale(db, "security_governance_pages", "en", {
     title: "Security & Governance",
-    content: "Content will be available soon. Please check back later.",
+    content: "XMax AI applies identity, access, logging, data handling, and export-compliance controls to enterprise AI workloads. The operating model separates customer access, model policy, infrastructure operations, and deployment approvals, with audit logs, least-privilege access, security review, incident handling, and workload restrictions designed into the service layer.",
   });
 }
 

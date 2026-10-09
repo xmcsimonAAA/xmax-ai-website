@@ -8,6 +8,7 @@ import { BrainCircuit, Cloud, Layers3, Shield, Workflow } from "lucide-react";
 import { fetchProductsPage, mediaUrl, toStrapiLocale, type ProductsPageData, type ProductItem } from "../lib/cms";
 import { useLang } from "@/components/Layout";
 import { products as P, t } from "@/lib/i18n";
+import { PRICING_MODELS, PRODUCTS } from "@/content/remediation";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Cloud,
@@ -49,23 +50,15 @@ export default function Products() {
   const headerHeading = data?.headerHeading || t(P, "headerHeading", lang);
   const headerParagraph = data?.headerParagraph || t(P, "headerParagraph", lang);
 
-  const products: ProductItem[] = data?.products?.length
-    ? data.products
-    : lang === "zh"
-      ? [
-          { id: 1, name: "XMAX Inference Grid", icon: "Cloud", description: "面向企业与业务系统的统一 AI 推理服务入口。", scene: "统一推理 / 多业务承载 / 弹性扩缩容", details: "统一承载大模型与行业模型推理调用\n面向多业务场景提供弹性扩容与服务路由\n面向企业与业务系统的统一 AI 推理服务入口", image: null },
-          { id: 2, name: "XMAX Model Gateway", icon: "Layers3", description: "模型接入、路由、配额、监控与治理平台。", scene: "模型治理 / 版本控制 / 策略编排", details: "统一接入模型、版本、策略、配额与调用日志\n模型接入、路由、配额、监控与治理\n版本控制与策略编排能力", image: null },
-          { id: 3, name: "XMAX Agent Studio", icon: "Workflow", description: "面向工作流、任务自动化和行业智能体构建。", scene: "智能体运行层 / 工具调用 / 任务编排", details: "支撑工作流、工具调用、企业任务编排\n行业智能体构建与运行\n任务自动化与工具调用能力", image: null },
-          { id: 4, name: "XMAX Knowledge Engine", icon: "BrainCircuit", description: "面向企业知识、检索增强和数据协同的智能引擎。", scene: "知识检索 / RAG / 数据协同", details: "支撑企业知识库、行业数据与检索增强\n面向企业知识与数据协同的智能引擎\n检索增强（RAG）与知识管理能力", image: null },
-          { id: 5, name: "XMAX Security Mesh", icon: "Shield", description: "面向安全审计、访问控制、护栏策略与运营治理。", scene: "安全治理 / 审计追踪 / 控制面", details: "覆盖访问控制、审计、护栏策略\n安全审计与访问控制平台\n护栏策略与运营治理能力", image: null },
-        ]
-      : [
-          { id: 1, name: "XMAX Inference Grid", icon: "Cloud", description: "A unified AI inference entry point for enterprise and business systems.", scene: "Unified inference / Multi-business workloads / Elastic scaling", details: "Unified inference calls for large models and industry models\nElastic scaling and routing for multi-business scenarios\nA unified AI inference service entry point for enterprise systems", image: null },
-          { id: 2, name: "XMAX Model Gateway", icon: "Layers3", description: "A platform for model access, routing, quotas, monitoring, and governance.", scene: "Model governance / Version control / Policy orchestration", details: "Unified access for models, versions, policies, quotas, and logs\nModel access, routing, quotas, monitoring, and governance\nVersion control and policy orchestration capabilities", image: null },
-          { id: 3, name: "XMAX Agent Studio", icon: "Workflow", description: "Build workflows, task automation, and industry agents.", scene: "Agent runtime / Tool calls / Task orchestration", details: "Workflow, tool-calling, and enterprise task orchestration\nIndustry agent construction and runtime\nTask automation and tool-calling capabilities", image: null },
-          { id: 4, name: "XMAX Knowledge Engine", icon: "BrainCircuit", description: "An intelligent engine for enterprise knowledge, retrieval augmentation, and data collaboration.", scene: "Knowledge retrieval / RAG / Data collaboration", details: "Enterprise knowledge bases, industry data, and retrieval augmentation\nAn intelligent engine for knowledge and data collaboration\nRetrieval-augmented generation and knowledge management", image: null },
-          { id: 5, name: "XMAX Security Mesh", icon: "Shield", description: "Security audit, access control, guardrail policies, and operational governance.", scene: "Security governance / Audit trail / Control plane", details: "Access control, audit, and guardrail policies\nSecurity audit and access-control platform\nGuardrail policies and operational governance", image: null },
-        ];
+  const products: ProductItem[] = PRODUCTS.map((product, index) => ({
+    id: index + 1,
+    name: product.name,
+    icon: product.icon,
+    description: product.description,
+    scene: product.scene,
+    details: product.details,
+    image: null,
+  }));
 
   return (
     <>
@@ -158,6 +151,24 @@ export default function Products() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-slate-800 bg-slate-950 py-20 lg:py-24">
+        <div className="mx-auto max-w-7xl px-8 lg:px-12">
+          <div className="max-w-3xl">
+            <p className="section-label text-slate-500">Commercial model</p>
+            <h2 className="mt-4 text-4xl text-white heading-display">A clear path from pilot to production.</h2>
+            <p className="mt-5 text-base leading-7 text-slate-400">Pricing is scoped to workload shape, capacity commitment, and support requirements. Final commercial terms are confirmed during enterprise review.</p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {PRICING_MODELS.map((model) => (
+              <div key={model.title} className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
+                <h3 className="text-lg font-semibold text-white">{model.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{model.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

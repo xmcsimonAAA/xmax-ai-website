@@ -5,6 +5,8 @@
  * 日语(ja)、韩语(ko)、繁体中文(zh-Hant) 由 translate.js 自动翻译，不在此维护字典
  */
 
+import { APPLICATION_AREAS, APPLICATION_PAGE_COPY } from "@/content/business";
+
 export type Lang = "zh" | "en";
 
 type TranslationMap = Record<string, Record<Lang, string>>;
@@ -26,7 +28,7 @@ export const home: TranslationMap = {
   missionLabel:     { zh: "使命", en: "Our Mission" },
   missionHeading:   { zh: "以可信、可扩展的 AI 推理服务基础设施，连接产业创新与社会需求", en: "Connecting industrial innovation and social needs through trusted, scalable AI inference infrastructure" },
   missionParagraph: { zh: "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，统一推进平台能力、产品化输出与行业化落地。", en: "XMAX AI Inc is the AI capability platform and industry service carrier of XMAX Group, unifying platform capabilities, product output, and industry-specific deployment." },
-  viewBusiness:     { zh: "查看业务版图", en: "Explore Business" },
+  viewBusiness:     { zh: "查看应用场景", en: "Explore Applications" },
   contactEco:       { zh: "联系生态合作", en: "Partner With Us" },
   recentUpdates:    { zh: "最新动态", en: "Recent Updates" },
   ctaHeading:       { zh: "与 XMAX AI 共建全球 AI 推理服务未来", en: "Building the Future of Global AI Inference with XMAX AI" },
@@ -37,10 +39,10 @@ export const home: TranslationMap = {
 export const about: TranslationMap = {
   headerLabel:       { zh: "关于我们", en: "About Us" },
   headerHeading:     { zh: "关于我们", en: "About XMAX AI" },
-  headerParagraph:   { zh: "XMAX AI Inc 是 XMAX 集团的 AI 能力平台与产业服务载体，围绕全球 AI 推理服务基础设施，构建面向全社会的产业级 AI 能力平台，并通过 9 大业务板块进行行业化落地。", en: "XMAX AI Inc is the AI capability platform and industry service carrier of XMAX Group, building industry-grade AI capabilities for society through global AI inference infrastructure and 9 business units." },
+  headerParagraph:   { zh: APPLICATION_PAGE_COPY.zh.narrative, en: APPLICATION_PAGE_COPY.en.narrative },
   narrativeLabel:    { zh: "Our Narrative", en: "Our Narrative" },
   narrativeHeading:  { zh: "品牌叙事原则", en: "Brand Narrative Principles" },
-  narrativeParagraph:{ zh: "官网整体叙事参考集团型科技公司的表达方式：先讲使命与定位，再讲核心能力平台，再讲业务板块与产品矩阵，最后讲技术底座、合作生态与联系入口。", en: "Our narrative follows a group-level tech company structure: mission & positioning first, then core platform capabilities, business units & product matrix, and finally technology infrastructure, partnerships, and contact." },
+  narrativeParagraph:{ zh: APPLICATION_PAGE_COPY.zh.narrative, en: APPLICATION_PAGE_COPY.en.narrative },
   groupLabel:        { zh: "Group Structure", en: "Group Structure" },
   groupHeading:      { zh: "集团与子公司网络", en: "Group & Subsidiary Network" },
   groupParagraph:    { zh: "XMAX AI Inc 在官网中展示组织结构与业务版图，以体现集团化经营与长期扩展能力。", en: "XMAX AI Inc presents its organizational structure and business landscape to reflect group-level operations and long-term expansion capabilities." },
@@ -74,9 +76,9 @@ export const products: TranslationMap = {
 
 // ─── 业务页 ────────────────────────────────────────────
 export const business: TranslationMap = {
-  headerLabel:       { zh: "业务板块", en: "Business Units" },
-  headerHeading:     { zh: "9 大业务板块", en: "9 Business Units" },
-  headerParagraph:   { zh: "平台能力通过 9 个明确业务板块形成行业化落地网络。每个板块都与统一 AI 基础设施连接，并承担不同产业场景中的服务角色。", en: "Platform capabilities are deployed through 9 distinct business units. Each unit connects to unified AI infrastructure and serves a different industry scenario." },
+  headerLabel:       { zh: APPLICATION_PAGE_COPY.zh.label, en: APPLICATION_PAGE_COPY.en.label },
+  headerHeading:     { zh: APPLICATION_PAGE_COPY.zh.heading, en: APPLICATION_PAGE_COPY.en.heading },
+  headerParagraph:   { zh: APPLICATION_PAGE_COPY.zh.paragraph, en: APPLICATION_PAGE_COPY.en.paragraph },
   coreCapabilities:  { zh: "核心能力", en: "Core Capabilities" },
   typicalScenarios:  { zh: "典型场景", en: "Typical Scenarios" },
   infraRelation:     { zh: "基础设施关系", en: "Infrastructure" },
@@ -127,23 +129,17 @@ export const navDropdown: Record<string, TranslationMap> = {
     knowledgeEngine:  { zh: "企业知识库与向量检索", en: "Enterprise knowledge base and vector retrieval" },
     securityMesh:     { zh: "AI 安全与合规防护网", en: "AI security and compliance mesh" },
   },
-  business: {
-    ecommerce:   { zh: "AI 驱动的电商解决方案", en: "AI-powered e-commerce solutions" },
-    entertainment:{ zh: "数字娱乐与内容生成", en: "Digital entertainment & content generation" },
-    supplyChain:  { zh: "智能物流与供应链优化", en: "Intelligent logistics & supply chain optimization" },
-    space:        { zh: "太空边缘 AI 推理节点", en: "Space edge AI inference nodes" },
-    robotics:     { zh: "具身智能与机器人系统", en: "Embodied intelligence & robotics systems" },
-    lifeSciences: { zh: "AI 辅助药物研发与诊断", en: "AI-assisted drug discovery & diagnostics" },
-    fintech:      { zh: "智能风控与量化交易", en: "Intelligent risk control & quantitative trading" },
-    security:     { zh: "网络安全与数据保护", en: "Cybersecurity & data protection" },
-    enterprise:   { zh: "企业级 AI 中台服务", en: "Enterprise AI middle platform services" },
-  },
+  business: Object.fromEntries(
+    ["ecommerce", "entertainment", "supplyChain", "space", "robotics", "lifeSciences", "fintech", "security", "enterprise"].map((key, index) => [
+      key, { zh: APPLICATION_AREAS[index].zh.subtitle, en: APPLICATION_AREAS[index].en.subtitle },
+    ]),
+  ),
 };
 
 // ─── Footer ────────────────────────────────────────────
 export const footer: TranslationMap = {
   groupSubsidiary:  { zh: "集团与子公司", en: "Group & Subsidiaries" },
-  nineUnits:        { zh: "9 大业务板块", en: "9 Business Units" },
+  applicationAreas: { zh: APPLICATION_PAGE_COPY.zh.heading, en: APPLICATION_PAGE_COPY.en.heading },
   enterpriseService:{ zh: "企业服务", en: "Enterprise Services" },
   securityGovernance:{ zh: "安全与治理", en: "Security & Governance" },
 };

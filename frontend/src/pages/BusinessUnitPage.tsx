@@ -18,7 +18,7 @@ export default function BusinessUnitPage() {
   const { lang } = useLang();
   const [, navigate] = useLocation();
   const backLabel = lang === "zh" ? "返回" : "Back";
-  const notFoundLabel = lang === "zh" ? "未找到业务板块" : "Business unit not found";
+  const notFoundLabel = lang === "zh" ? "未找到应用方向" : "Application area not found";
 
   // Extract unit id from URL hash: #/business/01 → 01
   const rawId = typeof window !== "undefined"

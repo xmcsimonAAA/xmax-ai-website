@@ -1,0 +1,172 @@
+{
+  "preparedDate": "2026-10-07",
+  "company": {
+    "name": "XMax AI Inc.",
+    "domain": "ai.xmax.com",
+    "registeredAddress": "732 S 6TH ST, STE R Las Vegas, NV 89101",
+    "officeAddress": "6565 E. Washington Blvd Commerce, CA 90040",
+    "apecAddress": "9 Battery Rd #15-108, MYP Centre, Singapore 049910",
+    "phone": "+1(323)888-9999",
+    "legalEffectiveDate": "April 1, 2026",
+    "emails": {
+      "official": "info@xmax.com"
+    },
+    "governanceNote": "The governance structure is inherited from the parent company.",
+    "ownershipNote": "XMax AI Inc. operates with a governance structure inherited from its parent company. Procurement and compliance submissions must identify actual ownership, affiliates, end users and destinations."
+  },
+  "team": [
+    {
+      "id": "umesh-patel",
+      "name": "Umesh Patel",
+      "nationality": "American",
+      "role": "Chairman of the Board"
+    },
+    {
+      "id": "xiaohua-lu",
+      "name": "Xiaohua Lu",
+      "nationality": "Singaporean",
+      "role": "CEO"
+    },
+    {
+      "id": "yizhou-zhao",
+      "name": "Yizhou Zhao",
+      "nationality": "Canadian",
+      "role": "COO",
+      "linkedin": "https://www.linkedin.com/in/yizhou-steven-zhao-1a3849390"
+    },
+    {
+      "id": "elon-goh",
+      "name": "Elon Goh",
+      "role": "Head of AI",
+      "linkedin": "https://www.linkedin.com/in/elon-goh-011a83425/"
+    },
+    {
+      "id": "thibault-mirmand",
+      "name": "Thibault Mirmand",
+      "role": "CMO",
+      "linkedin": "https://www.linkedin.com/in/thibault-mirmand-46b4b2198"
+    }
+  ],
+  "news": [],
+  "products": [
+    {
+      "slug": "inference-grid",
+      "name": "XMAX Inference Grid",
+      "icon": "Cloud",
+      "description": "Proposed enterprise inference API for business applications calling approved hosted models.",
+      "scene": "Enterprise software and application teams",
+      "details": "Delivery form: model inference API\nIndicative metering: input/output tokens, requests or compute usage\nAvailability and model coverage require a written service order"
+    },
+    {
+      "slug": "model-gateway",
+      "name": "XMAX Model Gateway",
+      "icon": "Layers3",
+      "description": "Proposed model-access and routing layer for applications integrating approved model providers.",
+      "scene": "Platform engineering and model governance",
+      "details": "Delivery form: managed model-access API\nIndicative metering: requests and underlying inference usage\nRouting policies, quotas and provider terms require onboarding review"
+    },
+    {
+      "slug": "agent-studio",
+      "name": "XMAX Agent Studio",
+      "icon": "Workflow",
+      "description": "Proposed workflow and agent integration layer for internal business processes with human oversight.",
+      "scene": "Operations, support and enterprise IT",
+      "details": "Delivery form: scoped workflow integration\nIndicative metering: workflow runs plus model usage\nTools, permissions and approvals are defined per implementation"
+    },
+    {
+      "slug": "knowledge-engine",
+      "name": "XMAX Knowledge Engine",
+      "icon": "BrainCircuit",
+      "description": "Proposed retrieval and knowledge-service layer for approved business documents and model responses.",
+      "scene": "Knowledge management and research",
+      "details": "Delivery form: retrieval API and integration project\nIndicative metering: indexed storage, retrieval requests and model usage\nDocument permissions and retention require review before integration"
+    },
+    {
+      "slug": "security-mesh",
+      "name": "XMAX Security Mesh",
+      "icon": "Shield",
+      "description": "Proposed access-policy and audit integration layer for governed enterprise AI workloads.",
+      "scene": "Security, platform and compliance teams",
+      "details": "Delivery form: deployment-specific controls and review\nIndicative commercial model: scoped integration and support\nNo independent certification is claimed"
+    }
+  ],
+  "businessScenarios": [
+    {
+      "title": "Customer service and commerce",
+      "description": "A proposed application pattern connects approved product and support documentation to an inference API. Business owners retain responsibility for response review and customer communication; no live deployment or customer outcome is claimed here.",
+      "tags": "Product questions,Support drafting,Human review"
+    },
+    {
+      "title": "Enterprise knowledge retrieval",
+      "description": "A proposed retrieval pattern limits searches to documents a user is authorized to access and returns source context alongside generated responses. Data ownership, access permissions and retention require agreement before integration.",
+      "tags": "Document search,Knowledge management,Access control"
+    },
+    {
+      "title": "Workflow and application integration",
+      "description": "A proposed integration pattern assists routine internal tasks. Tool actions and business decisions remain subject to explicit permissions and human approval. Workload scope, provider terms and data handling require review before production access.",
+      "tags": "Workflow automation,Application APIs,Approval steps"
+    }
+  ],
+  "deploymentPlan": [
+    {
+      "title": "Document the actual destination",
+      "description": "Deployment destinations are documented by operator, country, region and physical site."
+    },
+    {
+      "title": "Verify facility qualifications",
+      "description": "Facility documentation covers tier, physical access, power, connectivity and operating responsibility."
+    },
+    {
+      "title": "Define the permitted workload",
+      "description": "Each deployment records hardware ownership, administrators, end users, end uses, remote-access locations and model workloads."
+    },
+    {
+      "title": "Approve before production",
+      "description": "Production operations include implementation checks, access review, monitoring and support responsibilities."
+    }
+  ],
+  "partners": [],
+  "pricingModels": [
+    { "title": "Usage-based API", "description": "Indicative metering by input/output tokens, requests or compute consumption. Model and provider pricing require a service order." },
+    { "title": "Capacity planning", "description": "A proposed reserved-capacity arrangement depends on accepted infrastructure, workload sizing and a written capacity commitment." },
+    { "title": "Integration and support", "description": "Architecture, knowledge integration, workflow setup and support can be scoped as a project with defined deliverables and acceptance criteria." }
+  ],
+  "servicePages": {
+    "enterprise-service": {
+      "title": "Enterprise Services",
+      "paragraphs": [
+        "The service designs cover model API integration, knowledge retrieval and workflow assistance. Product names describe intended service architecture, not a guarantee that every feature is generally available.",
+        "A proposed enterprise engagement starts with workload requirements, provider selection, data permissions and an integration scope. Availability, prices, acceptance criteria and support are established in a written service order."
+      ]
+    },
+    "security-governance": {
+      "title": "Security and Governance",
+      "paragraphs": [
+        "The proposed operating framework requires defined access roles, credential protection, workload logging, data handling, incident ownership and review of users and uses before production admission.",
+        "Hardware procurement and remote access must be reviewed against applicable export controls and sanctions by qualified compliance personnel. Actual owners, affiliates, destinations and end users must be disclosed accurately.",
+        "No independent security certification or completed compliance audit is claimed. Deployment-specific evidence and written commitments must be reviewed separately."
+      ]
+    }
+  },
+  "legalPages": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": [
+        { "heading": "Scope", "body": "This policy describes the corporate website operated by XMax AI Inc. at ai.xmax.com. It covers website visits and business enquiries. Processing inside a separate inference platform, customer deployment or vendor service is governed by its own notice and contract." },
+        { "heading": "Information and purposes", "body": "A business enquiry may include a name, company, email address and message content. Hosting and delivery systems may process network and diagnostic information such as IP address, browser details, requested pages, timestamps and error records. Information is handled to respond to enquiries, operate and protect the website, investigate technical issues and meet applicable recordkeeping requirements." },
+        { "heading": "Recipients, retention and safeguards", "body": "Information may be handled by authorized personnel, email and hosting providers, professional advisers or group personnel assisting with the relevant enquiry. Records should be retained only for the business purpose, legal obligations and security needs for which they are collected. Safeguards must be appropriate to the information and its use." },
+        { "heading": "Rights and updates", "body": "Privacy requests for access, correction, deletion, retention or processing should be sent to the legal contact shown on the Contact page. The approved effective date identifies the current version; material changes to collection, recipients or purposes require an updated notice." }
+      ]
+    },
+    "terms": {
+      "title": "Website Terms of Use",
+      "sections": [
+        { "heading": "Scope", "body": "These terms address use of the corporate website of XMax AI Inc. They do not create a subscription, sale, service order or GPU procurement agreement. Paid inference services, support and deployment obligations require a separate written agreement." },
+        { "heading": "Acceptable use", "body": "Use the website only for lawful information and business enquiries. Do not attempt unauthorized access, interfere with the website, distribute malicious code, impersonate another party or infringe the rights of others." },
+        { "heading": "Product and commercial descriptions", "body": "Service designs, product names, pricing illustrations and deployment plans are informational. Availability, model access, regions, fees and acceptance criteria are confirmed in a written service order. A planning statement is not a representation of an operational facility or binding delivery commitment." },
+        { "heading": "Export controls and sanctions", "body": "Transactions, hardware destinations, end users, end uses and remote access must comply with applicable export-control and sanctions requirements. Parties must supply accurate ownership, affiliation and use information for review. Nothing on this website grants a licence or states that government approval has been obtained." },
+        { "heading": "External links and changes", "body": "External links are provided for source verification or convenience and are governed by their own terms. These website terms may be updated with an approved effective date. A separate executed agreement governs its own governing-law and dispute-resolution provisions." }
+      ]
+    }
+  }
+}

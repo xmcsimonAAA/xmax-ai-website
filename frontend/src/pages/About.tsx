@@ -72,14 +72,14 @@ export default function About() {
       ? [
           "强调平台、能力、治理与生态，而不是单一 AI 工具或单点产品",
           "强调 inference、orchestration、scale、latency、availability 与 security",
-          "强调 9 大业务板块带来的产业化落地与集团业务协同能力",
+          "逐项说明示例性 AI 应用流程与人工审核边界",
           "基于 AWS 全球基础设施构建可扩展的 AI 推理服务能力",
           "支持跨区域部署、低时延响应与高可用运行及多行业场景复制",
         ]
       : [
           "Focused on platform capabilities, governance, and ecosystem value rather than a single AI tool.",
           "Built around inference, orchestration, scale, latency, availability, and security.",
-          "Connected to nine business units for industry implementation and group-level synergy.",
+          "Illustrative AI application areas, with workflow descriptions and human review boundaries.",
           "Designed on AWS global infrastructure for scalable AI inference services.",
           "Supports cross-region deployment, low-latency response, high availability, and repeatable industry scenarios.",
         ];

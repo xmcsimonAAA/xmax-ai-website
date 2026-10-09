@@ -22,10 +22,11 @@ import {
   Wallet,
   Shield,
   Briefcase,
-  Globe,
   type LucideIcon,
 } from "lucide-react";
 import { fetchSiteSetting, toStrapiLocale, type SiteSettingData } from "@/lib/cms";
+import { COMPANY } from "@/content/remediation";
+import { APPLICATION_AREAS } from "@/content/business";
 
 /* ─── Language Context ───────────────────────────────── */
 
@@ -53,20 +54,21 @@ const T: Record<Lang, Record<string, string>> = {
     about: "关于我们",
     infrastructure: "AI 基础设施",
     products: "AI 产品",
-    business: "业务板块",
+    business: "应用场景",
     aws: "AWS 基础设施",
     contact: "联系我们",
+    news: "新闻与更新",
     tagline: "全球 AI 推理服务基础设施",
     footerDesc:
-      "XMAX AI Inc 正在 XMAX 集团体系下构建全球 AI 推理服务基础设施，并通过 9 大业务板块将 AI 能力服务全社会。",
+      "XMAX AI Inc 正在 XMAX 集团体系下构建全球 AI 推理服务基础设施，探索面向产业需求的 AI 应用流程。",
     company: "公司",
     platform: "平台",
-    businessFooter: "业务",
+    businessFooter: "应用",
     copyright: "© {year} XMAX AI Inc. 保留所有权利。",
     privacy: "隐私政策",
     terms: "服务条款",
     groupSubsidiary: "集团与子公司",
-    nineUnits: "9 大业务板块",
+    applicationAreas: "AI 应用方向",
     enterpriseService: "企业服务",
     securityGovernance: "安全与治理",
   },
@@ -75,20 +77,21 @@ const T: Record<Lang, Record<string, string>> = {
     about: "About",
     infrastructure: "AI Infrastructure",
     products: "AI Products",
-    business: "Business",
+    business: "Applications",
     aws: "AWS Infrastructure",
     contact: "Contact",
+    news: "News",
     tagline: "Global AI Inference Infrastructure",
     footerDesc:
-      "XMAX AI Inc is building global AI inference service infrastructure under the XMAX Group, serving society through 9 business units.",
+      "XMAX AI Inc is building global AI inference service infrastructure under the XMAX Group, connecting governed products with documented enterprise industry programs.",
     company: "Company",
     platform: "Platform",
-    businessFooter: "Business",
+    businessFooter: "Applications",
     copyright: "© {year} XMAX AI Inc. All rights reserved.",
     privacy: "Privacy Policy",
     terms: "Terms of Service",
     groupSubsidiary: "Group & Subsidiaries",
-    nineUnits: "9 Business Units",
+    applicationAreas: "AI Application Areas",
     enterpriseService: "Enterprise Services",
     securityGovernance: "Security & Governance",
   },
@@ -123,6 +126,8 @@ const navConfig: NavItem[] = [
     children: [
       { label: "公司定位", enLabel: "Company Positioning", href: "/about?scrollTo=positioning", icon: Landmark, description: "XMAX AI Inc 的企业定位与战略方向", enDescription: "XMAX AI Inc's positioning and strategic direction" },
       { label: "使命与愿景", enLabel: "Mission & Vision", href: "/about?scrollTo=vision", icon: Target, description: "构建全球 AI 推理服务基础设施", enDescription: "Building global AI inference infrastructure" },
+      { label: "团队", enLabel: "Team", href: "/team", icon: Building2, description: "核心团队与公开履历", enDescription: "Leadership and public profiles" },
+      { label: "信任中心", enLabel: "Trust Center", href: "/trust", icon: ShieldCheck, description: "部署、合规与服务承诺", enDescription: "Deployment, compliance, and service commitments" },
     ],
   },
   {
@@ -144,21 +149,23 @@ const navConfig: NavItem[] = [
   {
     labelKey: "business",
     href: "/business",
-    children: [
-      { label: "电商", enLabel: "E-Commerce", href: "/business/01", icon: ShoppingCart, description: "AI 驱动的电商解决方案", enDescription: "AI-powered e-commerce solutions" },
-      { label: "互娱", enLabel: "Entertainment", href: "/business/02", icon: Gamepad2, description: "数字娱乐与内容生成", enDescription: "Digital entertainment & content generation" },
-      { label: "供应链服务", enLabel: "Supply Chain", href: "/business/03", icon: Truck, description: "智能物流与供应链优化", enDescription: "Intelligent logistics & supply chain optimization" },
-      { label: "太空计算", enLabel: "Space Computing", href: "/business/04", icon: Rocket, description: "太空边缘 AI 推理节点", enDescription: "Space edge AI inference nodes" },
-      { label: "机器人", enLabel: "Robotics", href: "/business/05", icon: Bot, description: "具身智能与机器人系统", enDescription: "Embodied intelligence & robotics systems" },
-      { label: "生命科学", enLabel: "Life Sciences", href: "/business/06", icon: Dna, description: "AI 辅助药物研发与诊断", enDescription: "AI-assisted drug discovery & diagnostics" },
-      { label: "金融", enLabel: "Fintech", href: "/business/07", icon: Wallet, description: "智能风控与量化交易", enDescription: "Intelligent risk control & quantitative trading" },
-      { label: "安全", enLabel: "Security", href: "/business/08", icon: Shield, description: "网络安全与数据保护", enDescription: "Cybersecurity & data protection" },
-      { label: "企业服务", enLabel: "Enterprise", href: "/business/09", icon: Briefcase, description: "企业级 AI 中台服务", enDescription: "Enterprise AI middle platform services" },
-    ],
+    children: APPLICATION_AREAS.map((area, index) => ({
+      label: area.zh.title,
+      enLabel: area.en.title,
+      href: `/business/${area.id}`,
+      icon: [ShoppingCart, Gamepad2, Truck, Rocket, Bot, Dna, Wallet, Shield, Briefcase][index],
+      description: area.zh.subtitle,
+      enDescription: area.en.subtitle,
+    })),
   },
   {
     labelKey: "aws",
     href: "/aws",
+    children: [],
+  },
+  {
+    labelKey: "news",
+    href: "/news",
     children: [],
   },
   {
@@ -168,56 +175,9 @@ const navConfig: NavItem[] = [
   },
 ];
 
-/* ─── Language Selector ──────────────────────────────── */
-
-function LanguageSelector({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  const [open, setOpen] = useState(false);
-  const label = lang === "zh" ? "中文" : "English";
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 text-[13px] font-medium text-slate-300 transition-all hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
-      >
-        <Globe className="h-4 w-4" />
-        <span>{label}</span>
-        <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      <AnimatePresence>
-        {open && (
-          <>
-            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full z-50 mt-2 w-28 overflow-hidden rounded-xl border border-white/10 bg-slate-950/95 py-1 shadow-2xl shadow-black/40 backdrop-blur-md"
-            >
-              <button
-                onClick={() => { setLang("zh"); setOpen(false); }}
-                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-white/[0.07] ${lang === "zh" ? "font-semibold text-white" : "text-slate-300"}`}
-              >
-                中文
-              </button>
-              <button
-                onClick={() => { setLang("en"); setOpen(false); }}
-                className={`flex w-full items-center px-4 py-2 text-sm transition-colors hover:bg-white/[0.07] ${lang === "en" ? "font-semibold text-white" : "text-slate-300"}`}
-              >
-                English
-              </button>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
 /* ─── Navigation ─────────────────────────────────────── */
 
-function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+function Navigation({ lang }: { lang: Lang }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -296,10 +256,6 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
               </a>
             </div>
           ))}
-          </div>
-          {/* Language Selector */}
-          <div className="shrink-0">
-            <LanguageSelector lang={lang} setLang={setLang} />
           </div>
         </nav>
 
@@ -511,26 +467,6 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
               })}
             </div>
 
-            {/* Language Switcher */}
-            <div style={{ padding: "16px 20px", borderTop: "1px solid #1e293b", flexShrink: 0 }}>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">
-                {lang === "zh" ? "语言" : "Language"}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setLang("zh"); localStorage.setItem("xmax-lang", "zh"); setMobileOpen(false); }}
-                  style={{ touchAction: "manipulation" }}
-                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium ${lang === "zh" ? "border-white bg-white/10 text-white" : "border-slate-700 text-slate-400"}`}
-                >中文</button>
-                <button
-                  type="button"
-                  onClick={() => { setLang("en"); localStorage.setItem("xmax-lang", "en"); setMobileOpen(false); }}
-                  style={{ touchAction: "manipulation" }}
-                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium ${lang === "en" ? "border-white bg-white/10 text-white" : "border-slate-700 text-slate-400"}`}
-                >English</button>
-              </div>
-            </div>
           </div>
         </div>,
         document.body
@@ -542,7 +478,7 @@ function Navigation({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
 /* ─── Footer ─────────────────────────────────────────── */
 
 function Footer({ lang }: { lang: Lang }) {
-  const t = T[lang] || T["zh"];
+  const t = T[lang] || T["en"];
   return (
     <footer className="bg-slate-950 border-t border-slate-800/50 py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -558,6 +494,11 @@ function Footer({ lang }: { lang: Lang }) {
               </div>
             </div>
             <p className="mt-5 max-w-sm text-sm leading-7 text-slate-400">{t.footerDesc}</p>
+            <div className="mt-6 space-y-1 text-xs leading-5 text-slate-500">
+              <p>{COMPANY.registeredAddress}</p>
+              <a className="block transition-colors hover:text-slate-300" href={`mailto:${COMPANY.emails.business}`}>{COMPANY.emails.business}</a>
+              {COMPANY.phone && <a className="block transition-colors hover:text-slate-300" href={COMPANY.phoneHref}>{COMPANY.phone}</a>}
+            </div>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-3">
@@ -566,6 +507,8 @@ function Footer({ lang }: { lang: Lang }) {
               <ul className="mt-4 space-y-3">
                 {[
                   { label: t.about, href: "#/about" },
+                  { label: "Team", href: "#/team" },
+                  { label: t.news, href: "#/news" },
                   { label: t.groupSubsidiary, href: "#/about" },
                   { label: t.contact, href: "#/contact" },
                 ].map((item) => (
@@ -584,6 +527,8 @@ function Footer({ lang }: { lang: Lang }) {
                   { label: t.infrastructure, href: "#/infrastructure" },
                   { label: t.products, href: "#/products" },
                   { label: t.aws, href: "#/aws" },
+                  { label: "Trust Center", href: "#/trust" },
+                  { label: "SLA", href: "#/sla" },
                 ].map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className="text-sm text-slate-400 hover:text-white transition-colors">
@@ -597,7 +542,7 @@ function Footer({ lang }: { lang: Lang }) {
               <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-slate-300">{t.businessFooter}</h4>
               <ul className="mt-4 space-y-3">
                 {[
-                  { label: t.nineUnits, href: "#/business" },
+                  { label: t.applicationAreas, href: "#/business" },
                   { label: t.enterpriseService, href: "#/enterprise-service" },
                   { label: t.securityGovernance, href: "#/security-governance" },
                 ].map((item) => (
@@ -666,23 +611,18 @@ function ScrollToTop() {
 /* ─── Layout ─────────────────────────────────────────── */
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Lang>(() => {
-    const saved = localStorage.getItem("xmax-lang") as Lang | null;
-    if (saved === "zh") return "zh";
-    if (saved === "en") return "en";
-    return "en";  // 默认英文，首次访问显示英文
-  });
+  const lang: Lang = "en";
+  const setLang = (_nextLang: Lang) => {};
 
   useEffect(() => {
-    localStorage.setItem("xmax-lang", lang);
-    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    document.documentElement.lang = "en";
   }, [lang]);
 
   return (
     <LangContext.Provider value={{ lang, setLang }}>
       <div className="min-h-screen bg-slate-950 text-slate-100">
         <ScrollToTop />
-        <Navigation lang={lang} setLang={setLang} />
+        <Navigation lang={lang} />
         <main>{children}</main>
         <Footer lang={lang} />
       </div>

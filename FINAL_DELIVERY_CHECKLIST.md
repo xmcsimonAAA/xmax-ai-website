@@ -159,6 +159,31 @@ https://your-domain/admin
 
 如果前后端不同域名或不同端口，必须确认前端构建时的 `VITE_CMS_URL` 指向真实 Strapi 地址。
 
+如果前后端共用同一个域名，反向代理或 ALB 不能只把 `/admin` 指向 Strapi。后台内容管理、媒体库和国际化还需要这些路径也转发到 Strapi：
+
+```text
+/admin*
+/api*
+/uploads*
+/content-manager*
+/content-type-builder*
+/upload*
+/i18n*
+```
+
+部署后建议检查：
+
+```bash
+curl -I https://your-domain/admin/project-type
+curl -I https://your-domain/api/home-page?locale=en
+curl -I https://your-domain/content-manager/content-types
+curl -I https://your-domain/content-type-builder/content-types
+curl -I https://your-domain/upload/files
+curl -I https://your-domain/i18n/locales
+```
+
+以上路径应返回 JSON 或 Strapi 后端响应；如果 `/content-manager/...`、`/content-type-builder/...`、`/upload/...` 返回前端 `index.html`，Strapi 后台会出现 Content Manager 一直加载或 “Something went wrong”。
+
 ## 7. 后台语言与内容语言
 
 Strapi 管理后台界面固定使用英文 Admin UI，这是为了避开 Strapi 后台中文翻译包不完整导致的 Content Manager 偶发崩溃风险。
@@ -203,4 +228,3 @@ xmax-ai-website-delivery-YYYYMMDD.zip
 ```text
 xmax-ai-website-delivery-20260618.zip
 ```
-

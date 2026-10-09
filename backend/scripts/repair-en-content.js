@@ -34,28 +34,28 @@ const REPAIRS = [
     uid: "api::privacy-page.privacy-page",
     data: {
       title: "Privacy Policy",
-      content: "Content will be available soon. Please check back later.",
+      content: "Effective date: April 1, 2026\n\nXMax AI Inc. collects and uses contact, account, support, usage, diagnostic, security-review, and procurement-review information to provide and secure its services, respond to inquiries, operate inference services, monitor reliability, prevent abuse, comply with law, and improve products. We do not sell personal information. We use access controls, logging, encryption where appropriate, and least-privilege operational practices. Privacy requests may be sent to info@xmax.com.",
     },
   },
   {
     uid: "api::terms-page.terms-page",
     data: {
       title: "Terms of Service",
-      content: "Content will be available soon. Please check back later.",
+      content: "Effective date: April 1, 2026\n\nThese Terms govern access to ai.xmax.com and related services provided by XMax AI Inc. Customers may not violate law, infringe rights, evade sanctions or export controls, interfere with the service, bypass access controls, or submit data they are not authorized to process. Each party will comply with applicable export-control, sanctions, customs, and trade laws. Fees, support, and service levels are stated in the applicable service schedule. These Terms are governed by Nevada law unless a signed enterprise agreement states otherwise.",
     },
   },
   {
     uid: "api::enterprise-service-page.enterprise-service-page",
     data: {
       title: "Enterprise Service",
-      content: "Content will be available soon. Please check back later.",
+      content: "XMax AI provides enterprise inference services through scoped deployment programs, governed model access, integration support, and operational review. Each program begins with workload discovery, data and access review, architecture validation, and a written operating plan.",
     },
   },
   {
     uid: "api::security-governance-page.security-governance-page",
     data: {
       title: "Security & Governance",
-      content: "Content will be available soon. Please check back later.",
+      content: "XMax AI applies identity, access, logging, data handling, and export-compliance controls to enterprise AI workloads. The operating model separates customer access, model policy, infrastructure operations, and deployment approvals, with audit logs, least-privilege access, security review, incident handling, and workload restrictions designed into the service layer.",
     },
   },
 ];
